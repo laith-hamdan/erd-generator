@@ -863,54 +863,39 @@
         if (state.tables.length > 0 && !confirm('Replace your current diagram with the sample?')) return;
         _idSeq = 0;
 
-        const authors = { id: uid('t'), name: 'AUTHORS', relations: [], columns: [
-          makeColumn({ name: 'author_id', type: 'NUMBER(5)', constraint: 'PK' }),
-          makeColumn({ name: 'first_name', type: 'VARCHAR(50)' }),
-          makeColumn({ name: 'last_name', type: 'VARCHAR(50)' }),
-          makeColumn({ name: 'nationality', type: 'VARCHAR(50)' }),
+        const departments = { id: uid('t'), name: 'DEPARTMENTS', relations: [], columns: [
+          makeColumn({ name: 'dept_id', type: 'NUMBER(5)', constraint: 'PK' }),
+          makeColumn({ name: 'name', type: 'VARCHAR2(50)', constraint: 'UQ' }),
+          makeColumn({ name: 'location', type: 'VARCHAR2(100)' }),
+          makeColumn({ name: 'budget', type: 'NUMBER(10)' }),
         ]};
-        const categories = { id: uid('t'), name: 'CATEGORIES', relations: [], columns: [
-          makeColumn({ name: 'category_id', type: 'NUMBER(5)', constraint: 'PK' }),
-          makeColumn({ name: 'name', type: 'VARCHAR(50)', constraint: 'UQ' }),
-          makeColumn({ name: 'description', type: 'VARCHAR(255)' }),
-        ]};
-        const booksCols = [
-          makeColumn({ name: 'book_id', type: 'NUMBER(5)', constraint: 'PK' }),
-          makeColumn({ name: 'isbn', type: 'VARCHAR(20)', constraint: 'UQ' }),
-          makeColumn({ name: 'title', type: 'VARCHAR(150)' }),
-          makeColumn({ name: 'author_id', type: 'NUMBER(5)', constraint: 'FK' }),
-          makeColumn({ name: 'category_id', type: 'NUMBER(5)', constraint: 'FK' }),
-          makeColumn({ name: 'year_published', type: 'NUMBER(4)' }),
-          makeColumn({ name: 'total_copies', type: 'NUMBER(3)' }),
-          makeColumn({ name: 'available_copies', type: 'NUMBER(3)' }),
+        const employeesCols = [
+          makeColumn({ name: 'emp_id', type: 'NUMBER(5)', constraint: 'PK' }),
+          makeColumn({ name: 'first_name', type: 'VARCHAR2(50)' }),
+          makeColumn({ name: 'last_name', type: 'VARCHAR2(50)' }),
+          makeColumn({ name: 'email', type: 'VARCHAR2(100)', constraint: 'UQ' }),
+          makeColumn({ name: 'hire_date', type: 'DATE' }),
+          makeColumn({ name: 'salary', type: 'NUMBER(8)' }),
+          makeColumn({ name: 'dept_id', type: 'NUMBER(5)', constraint: 'FK' }),
         ];
-        const books = { id: uid('t'), name: 'BOOKS', columns: booksCols, relations: [
-          makeRelation({ fromColumnId: booksCols[3].id, toTableId: authors.id, toColumnId: authors.columns[0].id, cardinality: 'N:1', label: 'writes' }),
-          makeRelation({ fromColumnId: booksCols[4].id, toTableId: categories.id, toColumnId: categories.columns[0].id, cardinality: 'N:1', label: 'classifies' }),
+        const employees = { id: uid('t'), name: 'EMPLOYEES', columns: employeesCols, relations: [
+          makeRelation({ fromColumnId: employeesCols[6].id, toTableId: departments.id, toColumnId: departments.columns[0].id, cardinality: 'N:1', label: 'belongs to' }),
         ]};
-        const members = { id: uid('t'), name: 'MEMBERS', relations: [], columns: [
-          makeColumn({ name: 'member_id', type: 'NUMBER(5)', constraint: 'PK' }),
-          makeColumn({ name: 'first_name', type: 'VARCHAR(50)' }),
-          makeColumn({ name: 'last_name', type: 'VARCHAR(50)' }),
-          makeColumn({ name: 'email', type: 'VARCHAR(100)', constraint: 'UQ' }),
-          makeColumn({ name: 'join_date', type: 'DATE' }),
-          makeColumn({ name: 'status', type: 'VARCHAR(10)' }),
-        ]};
-        const loansCols = [
-          makeColumn({ name: 'loan_id', type: 'NUMBER(5)', constraint: 'PK' }),
-          makeColumn({ name: 'book_id', type: 'NUMBER(5)', constraint: 'FK' }),
-          makeColumn({ name: 'member_id', type: 'NUMBER(5)', constraint: 'FK' }),
-          makeColumn({ name: 'loan_date', type: 'DATE' }),
-          makeColumn({ name: 'due_date', type: 'DATE' }),
-          makeColumn({ name: 'return_date', type: 'DATE' }),
-          makeColumn({ name: 'status', type: 'VARCHAR(10)' }),
+        const projectsCols = [
+          makeColumn({ name: 'project_id', type: 'NUMBER(5)', constraint: 'PK' }),
+          makeColumn({ name: 'name', type: 'VARCHAR2(100)' }),
+          makeColumn({ name: 'start_date', type: 'DATE' }),
+          makeColumn({ name: 'end_date', type: 'DATE' }),
+          makeColumn({ name: 'status', type: 'VARCHAR2(20)' }),
+          makeColumn({ name: 'lead_employee_id', type: 'NUMBER(5)', constraint: 'FK' }),
+          makeColumn({ name: 'dept_id', type: 'NUMBER(5)', constraint: 'FK' }),
         ];
-        const loans = { id: uid('t'), name: 'LOANS', columns: loansCols, relations: [
-          makeRelation({ fromColumnId: loansCols[1].id, toTableId: books.id, toColumnId: booksCols[0].id, cardinality: 'N:1', label: 'borrowed in' }),
-          makeRelation({ fromColumnId: loansCols[2].id, toTableId: members.id, toColumnId: members.columns[0].id, cardinality: 'N:1', label: 'makes' }),
+        const projects = { id: uid('t'), name: 'PROJECTS', columns: projectsCols, relations: [
+          makeRelation({ fromColumnId: projectsCols[5].id, toTableId: employees.id, toColumnId: employeesCols[0].id, cardinality: 'N:1', label: 'led by' }),
+          makeRelation({ fromColumnId: projectsCols[6].id, toTableId: departments.id, toColumnId: departments.columns[0].id, cardinality: 'N:1', label: 'managed by' }),
         ]};
 
-        state = { tables: [authors, categories, books, members, loans] };
+        state = { tables: [departments, employees, projects] };
         render();
       }
 
