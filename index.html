@@ -881,19 +881,8 @@
         const employees = { id: uid('t'), name: 'EMPLOYEES', columns: employeesCols, relations: [
           makeRelation({ fromColumnId: employeesCols[6].id, toTableId: departments.id, toColumnId: departments.columns[0].id, cardinality: 'N:1', label: 'belongs to' }),
         ]};
-        const projectsCols = [
-          makeColumn({ name: 'project_id', type: 'NUMBER(5)', constraint: 'PK' }),
-          makeColumn({ name: 'name', type: 'VARCHAR2(100)' }),
-          makeColumn({ name: 'start_date', type: 'DATE' }),
-          makeColumn({ name: 'end_date', type: 'DATE' }),
-          makeColumn({ name: 'status', type: 'VARCHAR2(20)' }),
-          makeColumn({ name: 'lead_employee_id', type: 'NUMBER(5)', constraint: 'FK' }),
-        ];
-        const projects = { id: uid('t'), name: 'PROJECTS', columns: projectsCols, relations: [
-          makeRelation({ fromColumnId: projectsCols[5].id, toTableId: employees.id, toColumnId: employeesCols[0].id, cardinality: 'N:1', label: 'led by' }),
-        ]};
 
-        state = { tables: [departments, employees, projects] };
+        state = { tables: [departments, employees] };
         render();
       }
 
