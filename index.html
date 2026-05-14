@@ -83,6 +83,16 @@
       @media (max-width: 900px) {
         main.layout { grid-template-columns: 1fr; }
       }
+      @media (max-width: 600px) {
+        body { padding: 20px 14px 56px; gap: 14px; }
+        h1 { font-size: 18px; gap: 8px; }
+        .erd-icon { width: 22px; height: 22px; }
+        .sub { font-size: 11px; }
+        .btn { padding: 7px 12px; font-size: 11px; }
+        .actions { gap: 6px; }
+        .card { padding: 14px; }
+        footer.page { padding: 8px 0; }
+      }
       @media (min-width: 901px) {
         body { height: 100vh; min-height: 100vh; overflow: hidden; }
         main.layout {
@@ -102,7 +112,8 @@
         box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 6px 24px rgba(0,0,0,.07);
         padding: 18px;
       }
-      .card.preview { padding: 18px; overflow: auto; }
+      .card.preview { padding: 18px; overflow: auto; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
+      #svg { display: block; }
 
       footer.page {
         position: fixed;
@@ -624,7 +635,9 @@
         svg.appendChild(cp);
 
         // Wrapping group makes the table draggable as a unit (cursor: move).
-        const wrap = mk('g', { 'data-table-drag': t.id, style: 'cursor: move' });
+        // touch-action: none lets pointer events handle dragging on touch screens
+        // without the browser interpreting the gesture as a scroll.
+        const wrap = mk('g', { 'data-table-drag': t.id, style: 'cursor: move; touch-action: none' });
 
         // Shadow.
         wrap.appendChild(mk('rect', { x: x + 3, y: y + 4, width: TW, height: h, rx: 8, fill: 'rgba(0,0,0,.07)' }));
@@ -935,8 +948,7 @@
       document.getElementById('btn-png').addEventListener('click', downloadPng);
       document.getElementById('btn-pdf').addEventListener('click', downloadPdf);
 
-      // Drag tables: SVG-level mousedown picks the table under the cursor, then
-      // document-level mousemove/mouseup updates that table's x/y until release.
+      // Drag tables via Pointer Events so mouse, touch, and stylus all work.
       (function wireDrag() {
         const svgEl = document.getElementById('svg');
         let drag = null;
@@ -944,7 +956,7 @@
           const r = svgEl.getBoundingClientRect();
           return { x: evt.clientX - r.left, y: evt.clientY - r.top };
         };
-        svgEl.addEventListener('mousedown', (e) => {
+        svgEl.addEventListener('pointerdown', (e) => {
           const handle = e.target.closest('[data-table-drag]');
           if (!handle) return;
           const tid = handle.getAttribute('data-table-drag');
@@ -952,11 +964,12 @@
           if (!t) return;
           const pos = layoutTables()[tid];
           const pt = toSvg(e);
-          drag = { tid, offX: pt.x - pos.x, offY: pt.y - pos.y };
+          drag = { tid, offX: pt.x - pos.x, offY: pt.y - pos.y, pointerId: e.pointerId };
           document.body.style.userSelect = 'none';
+          try { svgEl.setPointerCapture(e.pointerId); } catch (_) {}
           e.preventDefault();
         });
-        document.addEventListener('mousemove', (e) => {
+        document.addEventListener('pointermove', (e) => {
           if (!drag) return;
           const t = state.tables.find((t) => t.id === drag.tid);
           if (!t) return;
@@ -965,9 +978,14 @@
           t.y = Math.max(0, pt.y - drag.offY);
           renderSvg();
         });
-        document.addEventListener('mouseup', () => {
-          if (drag) { drag = null; document.body.style.userSelect = ''; }
-        });
+        const endDrag = (e) => {
+          if (!drag) return;
+          try { if (e && e.pointerId != null) svgEl.releasePointerCapture(e.pointerId); } catch (_) {}
+          drag = null;
+          document.body.style.userSelect = '';
+        };
+        document.addEventListener('pointerup', endDrag);
+        document.addEventListener('pointercancel', endDrag);
       })();
 
       render();
