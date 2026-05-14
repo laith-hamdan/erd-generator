@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ERD Generator</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        background: #edf0f7;
+        font-family: "Inter", system-ui, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 32px 24px 60px;
+        gap: 18px;
+      }
+      header.page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      h1 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #0f172a;
+        letter-spacing: -0.4px;
+      }
+      .sub {
+        font-size: 12px;
+        color: #64748b;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 6px;
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid #1e3a5f;
+        background: #1e3a5f;
+        color: #fff;
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform .08s ease, background .15s ease, box-shadow .15s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,.12);
+      }
+      .btn:hover { background: #274d7a; }
+      .btn:active { transform: translateY(1px); }
+      .btn.secondary { background: #fff; color: #1e3a5f; }
+      .btn.secondary:hover { background: #f1f5f9; }
+      .btn.ghost { background: transparent; color: #1e3a5f; border-color: #cbd5e1; box-shadow: none; }
+      .btn.ghost:hover { background: #f1f5f9; }
+      .btn.danger { border-color: #b91c1c; background: #fff; color: #b91c1c; }
+      .btn.danger:hover { background: #fef2f2; }
+
+      main.layout {
+        display: grid;
+        grid-template-columns: minmax(360px, 420px) 1fr;
+        gap: 18px;
+        align-items: start;
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      @media (max-width: 900px) {
+        main.layout { grid-template-columns: 1fr; }
+      }
+      .card {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 6px 24px rgba(0,0,0,.07);
+        padding: 18px;
+      }
+      .card.preview { padding: 18px; overflow: auto; }
+
+      footer.page {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        font-size: 12px;
+        color: #64748b;
+        text-align: center;
+        background: rgba(237, 240, 247, 0.92);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border-top: 1px solid #e2e8f0;
+        padding: 10px 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      footer.page a {
+        display: inline-flex;
+        align-items: center;
+        color: #64748b;
+        transition: color .15s ease;
+      }
+      footer.page a:hover { color: #0077B5; }
+      footer.page svg { width: 14px; height: 14px; display: block; }
+      .builder-actions { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+      .builder-actions h2 { font-size:13px; font-weight:600; color:#0f172a; letter-spacing:.3px; text-transform:uppercase; }
+      .t-card { border:1px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:12px; background:#fafbff; }
+      .t-head { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+      .t-name {
+        flex:1; font-family:"Inter",sans-serif; font-size:13px; font-weight:600;
+        padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; background:#fff; color:#0f172a;
+      }
+      .t-name:focus { outline:2px solid #6366f1; outline-offset:1px; border-color:#6366f1; }
+      .col-list { display:flex; flex-direction:column; gap:6px; }
+      .col-row {
+        display:grid; grid-template-columns: 0.9fr 1.7fr 1.1fr 28px; gap:6px; align-items:center;
+      }
+      .col-row.has-fk { grid-template-columns: 0.9fr 1.7fr 1.1fr 28px; }
+      .col-row .fk-target { grid-column: 1 / -1; display:flex; gap:6px; }
+      .col-row input, .col-row select, .fk-target select {
+        font-family:"JetBrains Mono",monospace; font-size:11px; padding:5px 6px;
+        border:1px solid #cbd5e1; border-radius:5px; background:#fff; color:#0f172a; width:100%;
+      }
+      .col-row input:focus, .col-row select:focus, .fk-target select:focus {
+        outline:2px solid #6366f1; outline-offset:1px; border-color:#6366f1;
+      }
+      .icon-btn {
+        width:28px; height:28px; border:1px solid #e2e8f0; background:#fff; color:#64748b;
+        border-radius:6px; cursor:pointer; font-size:14px; line-height:1; display:flex; align-items:center; justify-content:center;
+      }
+      .icon-btn:hover { background:#fee2e2; color:#b91c1c; border-color:#fecaca; }
+      .col-add { margin-top:8px; }
+      .col-add .btn { padding:6px 10px; font-size:11px; }
+      .col-type-wrap { display: flex; gap: 4px; min-width: 0; }
+      .col-type-wrap select { flex: 1; min-width: 0; }
+      .col-type-wrap input { width: 46px; flex-shrink: 0; }
+      .rel-section { margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e2e8f0; }
+      .rel-section h3 { font-size: 11px; font-weight: 600; color: #64748b; letter-spacing: .4px; text-transform: uppercase; margin-bottom: 8px; }
+      .rel-list { display: flex; flex-direction: column; gap: 8px; }
+      .rel-row { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+      .rel-row-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 28px; gap: 6px; align-items: center; }
+      .rel-row-grid + .rel-row-grid { grid-template-columns: 1fr 2fr; }
+      .rel-row select, .rel-row input {
+        font-family: "JetBrains Mono", monospace; font-size: 11px; padding: 5px 6px;
+        border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; color: #0f172a; width: 100%;
+      }
+      .rel-row select:focus, .rel-row input:focus {
+        outline: 2px solid #6366f1; outline-offset: 1px; border-color: #6366f1;
+      }
+      .rel-add { margin-top: 8px; }
+      .rel-add .btn { padding: 6px 10px; font-size: 11px; }
+      .rel-warn {
+        font-size: 11px; color: #92400e;
+        background: #fef3c7; border: 1px solid #fde68a;
+        padding: 6px 8px; border-radius: 5px; line-height: 1.4;
+      }
+      .rel-warn strong { font-family: "JetBrains Mono", monospace; font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <header class="page">
+      <h1>ERD Generator</h1>
+      <p class="sub">Design your Entity–Relationship Diagram and export it</p>
+      <div class="actions">
+        <button class="btn ghost" id="btn-sample" type="button">Load Sample</button>
+        <button class="btn ghost" id="btn-reset-layout" type="button" title="Re-arrange tables in default grid">Reset Layout</button>
+        <button class="btn ghost" id="btn-reset" type="button">Reset</button>
+        <button class="btn" id="btn-png" type="button">Download PNG</button>
+        <button class="btn secondary" id="btn-pdf" type="button">Download PDF</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="card builder" id="builder"></section>
+      <section class="card preview">
+        <svg id="svg" xmlns="http://www.w3.org/2000/svg" width="800" height="500"></svg>
+      </section>
+    </main>
+
+    <footer class="page">
+      <span>Made by Laith Hamdan</span>
+      <a href="https://www.linkedin.com/in/laith-hamdan-89b142202/" target="_blank" rel="noopener" aria-label="LinkedIn profile of Laith Hamdan" title="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+      </a>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+      const TYPES = ['NUMBER(5)', 'NUMBER(3)', 'NUMBER(4)', 'VARCHAR(50)', 'VARCHAR(100)', 'VARCHAR(150)', 'VARCHAR(255)', 'VARCHAR(20)', 'DATE', 'BOOLEAN'];
+      const CONSTRAINTS = [
+        { v: '',   label: 'None' },
+        { v: 'PK', label: 'PK — Primary Key' },
+        { v: 'FK', label: 'FK — Foreign Key' },
+        { v: 'UQ', label: 'UQ — Unique' },
+      ];
+      const BASE_TYPES = ['NUMBER', 'VARCHAR2', 'VARCHAR', 'CHAR', 'DATE', 'TIMESTAMP', 'BOOLEAN', 'FLOAT', 'DECIMAL', 'TEXT', 'INT', 'BIGINT'];
+      const PARAM_TYPES = new Set(['NUMBER', 'VARCHAR2', 'VARCHAR', 'CHAR', 'DECIMAL']);
+
+      function parseType(t) {
+        const m = String(t || '').match(/^\s*([A-Z][A-Z0-9_]*)\s*(?:\(([^)]*)\))?\s*$/i);
+        if (!m) return { base: 'NUMBER', size: '' };
+        return { base: m[1].toUpperCase(), size: m[2] || '' };
+      }
+
+      function formatType(base, size) {
+        const b = (base || 'NUMBER').toUpperCase();
+        if (PARAM_TYPES.has(b) && size) return `${b}(${size})`;
+        return b;
+      }
+
+      function typesMatch(typeA, typeB) {
+        return parseType(typeA).base === parseType(typeB).base;
+      }
+
+      let _idSeq = 0;
+      const uid = (p) => `${p}${++_idSeq}`;
+
+      let state = { tables: [] };
+
+      function makeColumn(overrides = {}) {
+        return {
+          id: uid('c'),
+          name: 'column_name',
+          type: 'NUMBER(5)',
+          constraint: '',
+          ...overrides,
+        };
+      }
+
+      function makeTable(overrides = {}) {
+        const tableNumber = state.tables.length + 1;
+        return {
+          id: uid('t'),
+          name: `TABLE_${tableNumber}`,
+          columns: [makeColumn({ name: 'id', type: 'NUMBER(5)', constraint: 'PK' })],
+          relations: [],
+          ...overrides,
+        };
+      }
+
+      function makeRelation(overrides = {}) {
+        return {
+          id: uid('r'),
+          fromColumnId: '',
+          toTableId: '',
+          toColumnId: '',
+          cardinality: '1:N',
+          label: '',
+          ...overrides,
+        };
+      }
+
+      function addTable() {
+        const newTable = makeTable();
+        state.tables.push(newTable);
+        render();
+        const inp = document.querySelector(`.t-card[data-tid="${newTable.id}"] .t-name`);
+        if (inp) { inp.focus(); inp.select(); inp.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      }
+
+      function render() {
+        renderBuilder();
+        renderSvg();
+      }
+
+      function renderBuilder() {
+        const root = document.getElementById('builder');
+        const headerHtml = `
+          <div class="builder-actions">
+            <h2>Tables</h2>
+            <button class="btn" id="add-table" type="button">+ Add Table</button>
+          </div>`;
+
+        if (state.tables.length === 0) {
+          root.innerHTML = headerHtml + `<p style="color:#64748b;font-size:13px">No tables yet. Click "Add Table" to start.</p>`;
+          document.getElementById('add-table').addEventListener('click', addTable);
+          return;
+        }
+
+        const cardsHtml = state.tables.map((t) => `
+          <div class="t-card" data-tid="${t.id}">
+            <div class="t-head">
+              <input class="t-name" data-action="rename-table" value="${escapeAttr(t.name)}" />
+              <button class="icon-btn" data-action="delete-table" title="Delete table">×</button>
+            </div>
+            <div class="col-list">
+              ${t.columns.map((c) => renderColumnRow(t, c)).join('')}
+            </div>
+            <div class="col-add">
+              <button class="btn ghost" data-action="add-column" type="button">+ Add Column</button>
+            </div>
+            <div class="rel-section">
+              <h3>Relations</h3>
+              <div class="rel-list">
+                ${(t.relations || []).map((r) => renderRelationRow(t, r)).join('')}
+              </div>
+              <div class="rel-add">
+                <button class="btn ghost" data-action="add-relation" type="button">+ Add Relation</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        root.innerHTML = headerHtml + cardsHtml;
+
+        document.getElementById('add-table').addEventListener('click', addTable);
+        wireBuilderEvents();
+      }
+
+      function renderColumnRow(table, col) {
+        const constraintOptions = CONSTRAINTS.map((c) => `<option value="${c.v}" ${c.v === col.constraint ? 'selected' : ''}>${c.label}</option>`).join('');
+        const parsed = parseType(col.type);
+        const baseOptions = BASE_TYPES.map((b) => `<option value="${b}" ${b === parsed.base ? 'selected' : ''}>${b}</option>`).join('')
+          + (BASE_TYPES.includes(parsed.base) ? '' : `<option value="${escapeAttr(parsed.base)}" selected>${escapeAttr(parsed.base)}</option>`);
+        const showSize = PARAM_TYPES.has(parsed.base);
+
+        return `<div class="col-row" data-cid="${col.id}">
+          <input data-action="col-name" value="${escapeAttr(col.name)}" placeholder="column_name" />
+          <div class="col-type-wrap">
+            <select data-action="col-base">${baseOptions}</select>
+            ${showSize ? `<input data-action="col-size" value="${escapeAttr(parsed.size)}" placeholder="size" />` : ''}
+          </div>
+          <select data-action="col-constraint">${constraintOptions}</select>
+          <button class="icon-btn" data-action="delete-column" title="Delete column">×</button>
+        </div>`;
+      }
+
+      function renderRelationRow(table, r) {
+        const fromColOpts = `<option value="">— from column —</option>` + table.columns.map((c) => `<option value="${c.id}" ${c.id === r.fromColumnId ? 'selected' : ''}>${escapeAttr(c.name)}</option>`).join('');
+        const otherTables = state.tables.filter((t) => t.id !== table.id);
+        const toTableOpts = `<option value="">— to table —</option>` + otherTables.map((t) => `<option value="${t.id}" ${t.id === r.toTableId ? 'selected' : ''}>${escapeAttr(t.name)}</option>`).join('');
+        const tgtTable = otherTables.find((t) => t.id === r.toTableId);
+        const toColOpts = !tgtTable
+          ? `<option value="">— to column —</option>`
+          : `<option value="">— to column —</option>` + tgtTable.columns.map((c) => `<option value="${c.id}" ${c.id === r.toColumnId ? 'selected' : ''}>${escapeAttr(c.name)}</option>`).join('');
+        const cardOpts = [
+          { v: '1:N', label: 'One → Many (1:N)' },
+          { v: 'N:1', label: 'Many → One (N:1)' },
+          { v: '1:1', label: 'One → One (1:1)' },
+          { v: 'N:N', label: 'Many → Many (N:N)' },
+        ].map((c) => `<option value="${c.v}" ${c.v === r.cardinality ? 'selected' : ''}>${c.label}</option>`).join('');
+
+        const fromCol = table.columns.find((c) => c.id === r.fromColumnId);
+        const toCol = tgtTable && tgtTable.columns.find((c) => c.id === r.toColumnId);
+        const warnHtml = (fromCol && toCol && !typesMatch(fromCol.type, toCol.type))
+          ? `<div class="rel-warn" role="status">⚠ Type mismatch: <strong>${escapeAttr(fromCol.type)}</strong> vs <strong>${escapeAttr(toCol.type)}</strong>. Foreign keys usually require matching column types.</div>`
+          : '';
+
+        return `<div class="rel-row" data-rid="${r.id}">
+          <div class="rel-row-grid">
+            <select data-action="rel-from" title="From column">${fromColOpts}</select>
+            <select data-action="rel-to-table" title="To table">${toTableOpts}</select>
+            <select data-action="rel-to-col" title="To column">${toColOpts}</select>
+            <button class="icon-btn" data-action="delete-relation" title="Delete relation">×</button>
+          </div>
+          <div class="rel-row-grid">
+            <select data-action="rel-card" title="Cardinality">${cardOpts}</select>
+            <input data-action="rel-label" placeholder="label (e.g. writes)" value="${escapeAttr(r.label)}" />
+          </div>
+          ${warnHtml}
+        </div>`;
+      }
+
+      function escapeAttr(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      function wireBuilderEvents() {
+        document.querySelectorAll('[data-action="delete-table"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const tid = e.target.closest('.t-card').dataset.tid;
+            if (confirm('Delete this table?')) {
+              state.tables = state.tables.filter((t) => t.id !== tid);
+              state.tables.forEach((t) => {
+                t.relations = (t.relations || []).filter((r) => r.toTableId !== tid);
+              });
+              render();
+            }
+          });
+        });
+        document.querySelectorAll('[data-action="rename-table"]').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const tid = e.target.closest('.t-card').dataset.tid;
+            const t = state.tables.find((t) => t.id === tid);
+            if (t) { t.name = e.target.value; renderSvg(); }
+          });
+        });
+        document.querySelectorAll('[data-action="add-column"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const tid = e.target.closest('.t-card').dataset.tid;
+            const t = state.tables.find((t) => t.id === tid);
+            if (!t) return;
+            const newCol = makeColumn({ name: '' });
+            t.columns.push(newCol);
+            render();
+            const inp = document.querySelector(`.t-card[data-tid="${t.id}"] .col-row[data-cid="${newCol.id}"] [data-action="col-name"]`);
+            if (inp) inp.focus();
+          });
+        });
+        document.querySelectorAll('[data-action="delete-column"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const tid = e.target.closest('.t-card').dataset.tid;
+            const cid = e.target.closest('.col-row').dataset.cid;
+            const t = state.tables.find((t) => t.id === tid);
+            if (!t) return;
+            t.columns = t.columns.filter((c) => c.id !== cid);
+            t.relations = (t.relations || []).filter((r) => r.fromColumnId !== cid);
+            state.tables.forEach((other) => {
+              other.relations = (other.relations || []).filter((r) => !(r.toTableId === tid && r.toColumnId === cid));
+            });
+            render();
+          });
+        });
+
+        const findCol = (el) => {
+          const tid = el.closest('.t-card').dataset.tid;
+          const cid = el.closest('.col-row').dataset.cid;
+          const t = state.tables.find((t) => t.id === tid);
+          return { t, c: t && t.columns.find((c) => c.id === cid) };
+        };
+
+        document.querySelectorAll('[data-action="col-name"]').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const { c } = findCol(e.target);
+            if (c) { c.name = e.target.value; renderSvg(); }
+          });
+        });
+        document.querySelectorAll('[data-action="col-base"]').forEach((sel) => {
+          sel.addEventListener('change', (e) => {
+            const { c } = findCol(e.target);
+            if (!c) return;
+            const parsed = parseType(c.type);
+            c.type = formatType(e.target.value, parsed.size);
+            render(); // full re-render so the size field appears/disappears
+          });
+        });
+        document.querySelectorAll('[data-action="col-size"]').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const { c } = findCol(e.target);
+            if (!c) return;
+            const parsed = parseType(c.type);
+            c.type = formatType(parsed.base, e.target.value);
+            renderSvg();
+          });
+        });
+        document.querySelectorAll('[data-action="col-constraint"]').forEach((sel) => {
+          sel.addEventListener('change', (e) => {
+            const { c } = findCol(e.target);
+            if (!c) return;
+            c.constraint = e.target.value;
+            renderSvg();
+          });
+        });
+
+        const findRel = (el) => {
+          const tid = el.closest('.t-card').dataset.tid;
+          const rid = el.closest('.rel-row').dataset.rid;
+          const t = state.tables.find((t) => t.id === tid);
+          return { t, r: t && (t.relations || []).find((r) => r.id === rid) };
+        };
+
+        document.querySelectorAll('[data-action="add-relation"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const tid = e.target.closest('.t-card').dataset.tid;
+            const t = state.tables.find((t) => t.id === tid);
+            if (!t) return;
+            t.relations = t.relations || [];
+            t.relations.push(makeRelation());
+            render();
+          });
+        });
+        document.querySelectorAll('[data-action="delete-relation"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const tid = e.target.closest('.t-card').dataset.tid;
+            const rid = e.target.closest('.rel-row').dataset.rid;
+            const t = state.tables.find((t) => t.id === tid);
+            if (!t) return;
+            t.relations = (t.relations || []).filter((r) => r.id !== rid);
+            render();
+          });
+        });
+        document.querySelectorAll('[data-action="rel-from"]').forEach((sel) => {
+          sel.addEventListener('change', (e) => {
+            const { r } = findRel(e.target);
+            if (r) { r.fromColumnId = e.target.value; render(); }
+          });
+        });
+        document.querySelectorAll('[data-action="rel-to-table"]').forEach((sel) => {
+          sel.addEventListener('change', (e) => {
+            const { r } = findRel(e.target);
+            if (!r) return;
+            r.toTableId = e.target.value;
+            r.toColumnId = '';
+            render(); // re-render so to-column dropdown repopulates
+          });
+        });
+        document.querySelectorAll('[data-action="rel-to-col"]').forEach((sel) => {
+          sel.addEventListener('change', (e) => {
+            const { r } = findRel(e.target);
+            if (r) { r.toColumnId = e.target.value; render(); }
+          });
+        });
+        document.querySelectorAll('[data-action="rel-card"]').forEach((sel) => {
+          sel.addEventListener('change', (e) => {
+            const { r } = findRel(e.target);
+            if (r) { r.cardinality = e.target.value; renderSvg(); }
+          });
+        });
+        document.querySelectorAll('[data-action="rel-label"]').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const { r } = findRel(e.target);
+            if (r) { r.label = e.target.value; renderSvg(); }
+          });
+        });
+      }
+
+      const NS = 'http://www.w3.org/2000/svg';
+      const RH = 28, HH = 38, TW = 240;
+      const C = {
+        HDR: '#1e3a5f', HDR_T: '#ffffff',
+        ROW_A: '#ffffff', ROW_B: '#f8faff', BRD: '#e2e8f0',
+        COL_N: '#1e293b', COL_T: '#94a3b8', REL: '#6366f1',
+      };
+      const BADGE = {
+        PK: { bg: '#fef9c3', t: '#854d0e' },
+        FK: { bg: '#dbeafe', t: '#1e40af' },
+        UQ: { bg: '#dcfce7', t: '#166534' },
+      };
+
+      function mk(tag, attrs) {
+        const e = document.createElementNS(NS, tag);
+        for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+        return e;
+      }
+      function txt(x, y, s, attrs) {
+        const e = mk('text', { x, y, ...attrs });
+        e.textContent = s;
+        return e;
+      }
+      function tableHeight(t) { return HH + t.columns.length * RH; }
+
+      function layoutTables() {
+        // Default grid: 2 columns, 60px gap, top-left at (40, 40).
+        // Tables with custom x/y (set via drag) override their grid slot.
+        const COLS = 2, GAP_X = 80, GAP_Y = 60, X0 = 40, Y0 = 40;
+        const rows = [];
+        state.tables.forEach((t, i) => {
+          const col = i % COLS, row = Math.floor(i / COLS);
+          rows[row] = rows[row] || [];
+          rows[row][col] = t;
+        });
+        const positions = {};
+        let yCursor = Y0;
+        rows.forEach((rowTables) => {
+          let rowMaxH = 0;
+          rowTables.forEach((t, col) => {
+            positions[t.id] = { x: X0 + col * (TW + GAP_X), y: yCursor };
+            rowMaxH = Math.max(rowMaxH, tableHeight(t));
+          });
+          yCursor += rowMaxH + GAP_Y;
+        });
+        state.tables.forEach((t) => {
+          if (typeof t.x === 'number' && typeof t.y === 'number') {
+            positions[t.id] = { x: t.x, y: t.y };
+          }
+        });
+        return positions;
+      }
+
+      function drawTable(svg, t, pos) {
+        const h = tableHeight(t);
+        const { x, y } = pos;
+
+        // Clip path so row backgrounds respect rounded corners.
+        const cpId = `cp-${t.id}`;
+        const cp = mk('clipPath', { id: cpId });
+        cp.appendChild(mk('rect', { x, y, width: TW, height: h, rx: 8 }));
+        svg.appendChild(cp);
+
+        // Wrapping group makes the table draggable as a unit (cursor: move).
+        const wrap = mk('g', { 'data-table-drag': t.id, style: 'cursor: move' });
+
+        // Shadow.
+        wrap.appendChild(mk('rect', { x: x + 3, y: y + 4, width: TW, height: h, rx: 8, fill: 'rgba(0,0,0,.07)' }));
+
+        const g = mk('g', { 'clip-path': `url(#${cpId})` });
+
+        // Header.
+        g.appendChild(mk('rect', { x, y, width: TW, height: HH, fill: C.HDR }));
+        g.appendChild(txt(x + TW / 2, y + HH / 2 + 1, t.name || '(unnamed)', {
+          'text-anchor': 'middle', 'dominant-baseline': 'central',
+          fill: C.HDR_T, 'font-family': "'Inter',sans-serif",
+          'font-size': 13, 'font-weight': 700, 'letter-spacing': '0.8',
+        }));
+
+        // Rows.
+        t.columns.forEach((col, i) => {
+          const ry = y + HH + i * RH;
+          const fill = i % 2 === 0 ? C.ROW_A : C.ROW_B;
+          g.appendChild(mk('rect', { x, y: ry, width: TW, height: RH, fill }));
+          g.appendChild(mk('line', { x1: x, y1: ry, x2: x + TW, y2: ry, stroke: C.BRD, 'stroke-width': 0.5 }));
+
+          let nx = x + 8;
+          if (col.constraint && BADGE[col.constraint]) {
+            const b = BADGE[col.constraint];
+            g.appendChild(mk('rect', { x: x + 6, y: ry + 7, width: 26, height: 14, rx: 3, fill: b.bg }));
+            g.appendChild(txt(x + 19, ry + RH / 2, col.constraint, {
+              'text-anchor': 'middle', 'dominant-baseline': 'central',
+              fill: b.t, 'font-family': "'JetBrains Mono',monospace",
+              'font-size': 9, 'font-weight': 600,
+            }));
+            nx = x + 37;
+          }
+          g.appendChild(txt(nx, ry + RH / 2, col.name || '(unnamed)', {
+            'dominant-baseline': 'central', fill: C.COL_N,
+            'font-family': "'JetBrains Mono',monospace",
+            'font-size': 11, 'font-weight': col.constraint ? 500 : 400,
+          }));
+          g.appendChild(txt(x + TW - 8, ry + RH / 2, col.type || '', {
+            'text-anchor': 'end', 'dominant-baseline': 'central',
+            fill: C.COL_T, 'font-family': "'JetBrains Mono',monospace",
+            'font-size': 10,
+          }));
+        });
+
+        wrap.appendChild(g);
+
+        // Border.
+        wrap.appendChild(mk('rect', { x, y, width: TW, height: h, rx: 8, fill: 'none', stroke: C.BRD, 'stroke-width': 1 }));
+
+        svg.appendChild(wrap);
+      }
+
+      function seg(x1, y1, x2, y2) {
+        return mk('line', { x1, y1, x2, y2, stroke: C.REL, 'stroke-width': 1.5, 'stroke-linecap': 'round' });
+      }
+      function relPath(d) {
+        return mk('path', { d, fill: 'none', stroke: C.REL, 'stroke-width': 1.5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+      }
+
+      // Crow's foot at the "many" side. dir = 'right' means the line arrives going → into the box's LEFT edge.
+      function crowfoot(g, bx, by, dir) {
+        const F = 16, B = 9, BAR = 23;
+        if (dir === 'right') {
+          g.appendChild(seg(bx - F, by, bx, by - B));
+          g.appendChild(seg(bx - F, by, bx, by));
+          g.appendChild(seg(bx - F, by, bx, by + B));
+          g.appendChild(seg(bx - BAR, by - B, bx - BAR, by + B));
+        } else {
+          g.appendChild(seg(bx + F, by, bx, by - B));
+          g.appendChild(seg(bx + F, by, bx, by));
+          g.appendChild(seg(bx + F, by, bx, by + B));
+          g.appendChild(seg(bx + BAR, by - B, bx + BAR, by + B));
+        }
+      }
+      // Single bar at the "one" side. dir = 'right' means the line leaves going → from the box's RIGHT edge.
+      function onebar(g, ex, ey, dir) {
+        const OFF = 8, H = 9;
+        if (dir === 'right') g.appendChild(seg(ex + OFF, ey - H, ex + OFF, ey + H));
+        else                 g.appendChild(seg(ex - OFF, ey - H, ex - OFF, ey + H));
+      }
+
+      function collectRelationships(positions) {
+        const rels = [];
+        state.tables.forEach((srcTable) => {
+          (srcTable.relations || []).forEach((rel) => {
+            if (!rel.fromColumnId || !rel.toTableId || !rel.toColumnId) return;
+            const srcCol = srcTable.columns.find((c) => c.id === rel.fromColumnId);
+            if (!srcCol) return;
+            const tgtTable = state.tables.find((t) => t.id === rel.toTableId);
+            if (!tgtTable) return;
+            const tgtCol = tgtTable.columns.find((c) => c.id === rel.toColumnId);
+            if (!tgtCol) return;
+            rels.push({
+              srcTable, srcCol, tgtTable, tgtCol,
+              label: rel.label,
+              cardinality: rel.cardinality || '1:N',
+            });
+          });
+        });
+        // Lane assignment so parallel relationships between the same table pair don't overlap.
+        const groups = {};
+        rels.forEach((r) => {
+          const key = [r.srcTable.id, r.tgtTable.id].sort().join('::');
+          groups[key] = groups[key] || [];
+          r._idx = groups[key].length;
+          groups[key].push(r);
+        });
+        rels.forEach((r) => {
+          const key = [r.srcTable.id, r.tgtTable.id].sort().join('::');
+          r._count = groups[key].length;
+        });
+        return rels;
+      }
+
+      function columnY(table, col, pos) {
+        const idx = table.columns.findIndex((c) => c.id === col.id);
+        return pos.y + HH + idx * RH + RH / 2;
+      }
+
+      function drawRelationship(svg, rel, positions) {
+        const sp = positions[rel.srcTable.id];
+        const tp = positions[rel.tgtTable.id];
+        const sy = columnY(rel.srcTable, rel.srcCol, sp);
+        const ty = columnY(rel.tgtTable, rel.tgtCol, tp);
+
+        const srcCx = sp.x + TW / 2, tgtCx = tp.x + TW / 2;
+        let sx, srcDir, ex, tgtDir;
+        if (srcCx > tgtCx) {
+          sx = sp.x;            srcDir = 'right';
+          ex = tp.x + TW;       tgtDir = 'right';
+        } else {
+          sx = sp.x + TW;       srcDir = 'left';
+          ex = tp.x;            tgtDir = 'left';
+        }
+
+        const idx = rel._idx || 0, count = rel._count || 1;
+        const lane = idx - (count - 1) / 2;
+        const elbowOffset = lane * 22;
+        const endOffset = lane * 4;
+        const sy2 = sy + endOffset;
+        const ty2 = ty + endOffset;
+        const midX = (sx + ex) / 2 + elbowOffset;
+
+        const d = `M${ex},${ty2} L${midX},${ty2} L${midX},${sy2} L${sx},${sy2}`;
+        const g = mk('g', {});
+        g.appendChild(relPath(d));
+
+        // 'X:Y' — X = from-side cardinality, Y = to-side cardinality. '1' → bar; 'N' → crow's foot.
+        const card = (rel.cardinality || '1:N').split(':');
+        const fromCard = card[0];
+        const toCard = card[1] || '1';
+        const inv = (d) => (d === 'right' ? 'left' : 'right');
+        // From side at (sx, sy2). onebar's `dir` matches connector travel direction at the PK side
+        // by convention; at the FK/source side we need to invert it so the bar sits OUTSIDE the box.
+        // crowfoot at the source side uses srcDir directly (that was the original convention).
+        if (fromCard === '1') onebar(g, sx, sy2, inv(srcDir));
+        else                   crowfoot(g, sx, sy2, srcDir);
+        // To side at (ex, ty2). onebar at PK side uses tgtDir directly; crowfoot at PK side needs inversion.
+        if (toCard === '1') onebar(g, ex, ty2, tgtDir);
+        else                 crowfoot(g, ex, ty2, inv(tgtDir));
+
+        if (rel.label) {
+          g.appendChild(txt(midX, Math.min(sy2, ty2) - 6, rel.label, {
+            'text-anchor': 'middle', fill: '#818cf8',
+            'font-family': "'Inter',sans-serif", 'font-size': 11, 'font-style': 'italic',
+          }));
+        }
+        svg.appendChild(g);
+      }
+
+      function renderSvg() {
+        const svg = document.getElementById('svg');
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+        if (state.tables.length === 0) {
+          svg.setAttribute('width', 800);
+          svg.setAttribute('height', 200);
+          svg.appendChild(txt(400, 100, 'Add a table to see your diagram here', {
+            'text-anchor': 'middle', 'dominant-baseline': 'central',
+            fill: '#94a3b8', 'font-family': "'Inter',sans-serif",
+            'font-size': 14,
+          }));
+          return;
+        }
+
+        const positions = layoutTables();
+
+        // Draw relationships first so tables paint over the connectors.
+        const rels = collectRelationships(positions);
+        rels.forEach((r) => drawRelationship(svg, r, positions));
+
+        // Then draw tables.
+        state.tables.forEach((t) => drawTable(svg, t, positions[t.id]));
+
+        // Resize SVG to fit.
+        let maxX = 0, maxY = 0;
+        state.tables.forEach((t) => {
+          const p = positions[t.id];
+          maxX = Math.max(maxX, p.x + TW);
+          maxY = Math.max(maxY, p.y + tableHeight(t));
+        });
+        svg.setAttribute('width', maxX + 40);
+        svg.setAttribute('height', maxY + 40);
+      }
+
+      function svgToCanvas(scale) {
+        return new Promise((resolve, reject) => {
+          const src = document.getElementById('svg');
+          const w = parseInt(src.getAttribute('width'), 10);
+          const h = parseInt(src.getAttribute('height'), 10);
+
+          const clone = src.cloneNode(true);
+          clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+          clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+          clone.setAttribute('width', w);
+          clone.setAttribute('height', h);
+
+          const xml = new XMLSerializer().serializeToString(clone);
+          const svg64 = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
+
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = w * scale;
+            canvas.height = h * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.setTransform(scale, 0, 0, scale, 0, 0);
+            ctx.drawImage(img, 0, 0);
+            resolve({ canvas, w, h });
+          };
+          img.onerror = reject;
+          img.src = svg64;
+        });
+      }
+
+      function downloadHref(href, name) {
+        const a = document.createElement('a');
+        a.href = href;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
+      async function downloadPng() {
+        if (state.tables.length === 0) { alert('Add at least one table first.'); return; }
+        const { canvas } = await svgToCanvas(2);
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          downloadHref(url, 'erd.png');
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }, 'image/png');
+      }
+
+      async function downloadPdf() {
+        if (state.tables.length === 0) { alert('Add at least one table first.'); return; }
+        const { canvas, w, h } = await svgToCanvas(2);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: w >= h ? 'landscape' : 'portrait',
+          unit: 'pt',
+          format: [w, h],
+        });
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, w, h);
+        pdf.save('erd.pdf');
+      }
+
+      function loadSample() {
+        if (state.tables.length > 0 && !confirm('Replace your current diagram with the sample?')) return;
+        _idSeq = 0;
+
+        const authors = { id: uid('t'), name: 'AUTHORS', relations: [], columns: [
+          makeColumn({ name: 'author_id', type: 'NUMBER(5)', constraint: 'PK' }),
+          makeColumn({ name: 'first_name', type: 'VARCHAR(50)' }),
+          makeColumn({ name: 'last_name', type: 'VARCHAR(50)' }),
+          makeColumn({ name: 'nationality', type: 'VARCHAR(50)' }),
+        ]};
+        const categories = { id: uid('t'), name: 'CATEGORIES', relations: [], columns: [
+          makeColumn({ name: 'category_id', type: 'NUMBER(5)', constraint: 'PK' }),
+          makeColumn({ name: 'name', type: 'VARCHAR(50)', constraint: 'UQ' }),
+          makeColumn({ name: 'description', type: 'VARCHAR(255)' }),
+        ]};
+        const booksCols = [
+          makeColumn({ name: 'book_id', type: 'NUMBER(5)', constraint: 'PK' }),
+          makeColumn({ name: 'isbn', type: 'VARCHAR(20)', constraint: 'UQ' }),
+          makeColumn({ name: 'title', type: 'VARCHAR(150)' }),
+          makeColumn({ name: 'author_id', type: 'NUMBER(5)', constraint: 'FK' }),
+          makeColumn({ name: 'category_id', type: 'NUMBER(5)', constraint: 'FK' }),
+          makeColumn({ name: 'year_published', type: 'NUMBER(4)' }),
+          makeColumn({ name: 'total_copies', type: 'NUMBER(3)' }),
+          makeColumn({ name: 'available_copies', type: 'NUMBER(3)' }),
+        ];
+        const books = { id: uid('t'), name: 'BOOKS', columns: booksCols, relations: [
+          makeRelation({ fromColumnId: booksCols[3].id, toTableId: authors.id, toColumnId: authors.columns[0].id, cardinality: 'N:1', label: 'writes' }),
+          makeRelation({ fromColumnId: booksCols[4].id, toTableId: categories.id, toColumnId: categories.columns[0].id, cardinality: 'N:1', label: 'classifies' }),
+        ]};
+        const members = { id: uid('t'), name: 'MEMBERS', relations: [], columns: [
+          makeColumn({ name: 'member_id', type: 'NUMBER(5)', constraint: 'PK' }),
+          makeColumn({ name: 'first_name', type: 'VARCHAR(50)' }),
+          makeColumn({ name: 'last_name', type: 'VARCHAR(50)' }),
+          makeColumn({ name: 'email', type: 'VARCHAR(100)', constraint: 'UQ' }),
+          makeColumn({ name: 'join_date', type: 'DATE' }),
+          makeColumn({ name: 'status', type: 'VARCHAR(10)' }),
+        ]};
+        const loansCols = [
+          makeColumn({ name: 'loan_id', type: 'NUMBER(5)', constraint: 'PK' }),
+          makeColumn({ name: 'book_id', type: 'NUMBER(5)', constraint: 'FK' }),
+          makeColumn({ name: 'member_id', type: 'NUMBER(5)', constraint: 'FK' }),
+          makeColumn({ name: 'loan_date', type: 'DATE' }),
+          makeColumn({ name: 'due_date', type: 'DATE' }),
+          makeColumn({ name: 'return_date', type: 'DATE' }),
+          makeColumn({ name: 'status', type: 'VARCHAR(10)' }),
+        ];
+        const loans = { id: uid('t'), name: 'LOANS', columns: loansCols, relations: [
+          makeRelation({ fromColumnId: loansCols[1].id, toTableId: books.id, toColumnId: booksCols[0].id, cardinality: 'N:1', label: 'borrowed in' }),
+          makeRelation({ fromColumnId: loansCols[2].id, toTableId: members.id, toColumnId: members.columns[0].id, cardinality: 'N:1', label: 'makes' }),
+        ]};
+
+        state = { tables: [authors, categories, books, members, loans] };
+        render();
+      }
+
+      document.getElementById('btn-sample').addEventListener('click', loadSample);
+      document.getElementById('btn-reset').addEventListener('click', () => {
+        if (state.tables.length === 0 || confirm('Clear everything?')) {
+          state = { tables: [] };
+          render();
+        }
+      });
+      document.getElementById('btn-reset-layout').addEventListener('click', () => {
+        state.tables.forEach((t) => { delete t.x; delete t.y; });
+        renderSvg();
+      });
+      document.getElementById('btn-png').addEventListener('click', downloadPng);
+      document.getElementById('btn-pdf').addEventListener('click', downloadPdf);
+
+      // Drag tables: SVG-level mousedown picks the table under the cursor, then
+      // document-level mousemove/mouseup updates that table's x/y until release.
+      (function wireDrag() {
+        const svgEl = document.getElementById('svg');
+        let drag = null;
+        const toSvg = (evt) => {
+          const r = svgEl.getBoundingClientRect();
+          return { x: evt.clientX - r.left, y: evt.clientY - r.top };
+        };
+        svgEl.addEventListener('mousedown', (e) => {
+          const handle = e.target.closest('[data-table-drag]');
+          if (!handle) return;
+          const tid = handle.getAttribute('data-table-drag');
+          const t = state.tables.find((t) => t.id === tid);
+          if (!t) return;
+          const pos = layoutTables()[tid];
+          const pt = toSvg(e);
+          drag = { tid, offX: pt.x - pos.x, offY: pt.y - pos.y };
+          document.body.style.userSelect = 'none';
+          e.preventDefault();
+        });
+        document.addEventListener('mousemove', (e) => {
+          if (!drag) return;
+          const t = state.tables.find((t) => t.id === drag.tid);
+          if (!t) return;
+          const pt = toSvg(e);
+          t.x = Math.max(0, pt.x - drag.offX);
+          t.y = Math.max(0, pt.y - drag.offY);
+          renderSvg();
+        });
+        document.addEventListener('mouseup', () => {
+          if (drag) { drag = null; document.body.style.userSelect = ''; }
+        });
+      })();
+
+      render();
+    </script>
+  </body>
+</html>
