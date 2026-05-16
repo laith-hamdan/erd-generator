@@ -1182,6 +1182,107 @@
         (a.children || []).forEach(clearAttrPin);
       }
 
+      // ============================================================================
+      // ERD MODE: SVG primitives
+      // ============================================================================
+
+      const ERD_C = {
+        ENT_FILL: '#f1f5f9', ENT_STROKE: '#1e3a5f',
+        REL_FILL: '#f1f5f9', REL_STROKE: '#1e3a5f',
+        ATTR_FILL: '#ffffff', ATTR_STROKE: '#1e3a5f',
+        LINE: '#1e3a5f',
+        LABEL: '#0f172a',
+      };
+      const ERD_DIMS = {
+        ENT_W: 130, ENT_H: 40, ENT_DBL_INSET: 4,
+        REL_W: 130, REL_H: 60, REL_DBL_INSET: 5,
+        ATTR_RX: 50, ATTR_RY: 16, ATTR_DBL_INSET: 4,
+        LINE_W: 1.4, DBL_LINE_GAP: 3,
+      };
+
+      // Draws an entity rectangle (double-bordered if weak). Returns the wrapping <g>.
+      function drawErdEntity(svg, e, pos) {
+        const { ENT_W: w, ENT_H: h, ENT_DBL_INSET: ins } = ERD_DIMS;
+        const x = pos.x - w / 2, y = pos.y - h / 2;
+        const g = mk('g', { 'data-erd-drag': `entity:${e.id}`, style: 'cursor: move; touch-action: none' });
+        g.appendChild(mk('rect', { x: x + 3, y: y + 4, width: w, height: h, rx: 4, fill: 'rgba(0,0,0,.07)' })); // shadow
+        g.appendChild(mk('rect', { x, y, width: w, height: h, rx: 4, fill: ERD_C.ENT_FILL, stroke: ERD_C.ENT_STROKE, 'stroke-width': ERD_DIMS.LINE_W }));
+        if (e.kind === 'weak') {
+          g.appendChild(mk('rect', { x: x + ins, y: y + ins, width: w - 2 * ins, height: h - 2 * ins, rx: 3, fill: 'none', stroke: ERD_C.ENT_STROKE, 'stroke-width': ERD_DIMS.LINE_W }));
+        }
+        g.appendChild(txt(pos.x, pos.y + 1, e.name || '(unnamed)', {
+          'text-anchor': 'middle', 'dominant-baseline': 'central',
+          fill: ERD_C.LABEL, 'font-family': "'JetBrains Mono', monospace",
+          'font-size': 12, 'font-weight': 700,
+        }));
+        svg.appendChild(g);
+      }
+
+      // Draws a relationship diamond (double-bordered if identifying). Returns the wrapping <g>.
+      function drawErdRelationship(svg, r, pos) {
+        const { REL_W: w, REL_H: h, REL_DBL_INSET: ins } = ERD_DIMS;
+        const x = pos.x, y = pos.y;
+        const pts = (W, H) => `${x},${y - H/2} ${x + W/2},${y} ${x},${y + H/2} ${x - W/2},${y}`;
+        const g = mk('g', { 'data-erd-drag': `relationship:${r.id}`, style: 'cursor: move; touch-action: none' });
+        g.appendChild(mk('polygon', { points: pts(w + 4, h + 4), fill: 'rgba(0,0,0,.07)', transform: `translate(2,3)` })); // shadow
+        g.appendChild(mk('polygon', { points: pts(w, h), fill: ERD_C.REL_FILL, stroke: ERD_C.REL_STROKE, 'stroke-width': ERD_DIMS.LINE_W }));
+        if (r.kind === 'identifying') {
+          g.appendChild(mk('polygon', { points: pts(w - 2 * ins, h - 2 * ins), fill: 'none', stroke: ERD_C.REL_STROKE, 'stroke-width': ERD_DIMS.LINE_W }));
+        }
+        g.appendChild(txt(x, y + 1, r.name || '(unnamed)', {
+          'text-anchor': 'middle', 'dominant-baseline': 'central',
+          fill: ERD_C.LABEL, 'font-family': "'JetBrains Mono', monospace",
+          'font-size': 11, 'font-weight': 700,
+        }));
+        svg.appendChild(g);
+      }
+
+      // Draws an attribute oval. `kind` controls fill/stroke/underline.
+      function drawErdAttribute(svg, a, pos) {
+        const { ATTR_RX: rx, ATTR_RY: ry, ATTR_DBL_INSET: ins } = ERD_DIMS;
+        const dashed = a.kind === 'derived';
+        const doubled = a.kind === 'multivalued';
+        const g = mk('g', { 'data-erd-drag': `attribute:${a.id}`, style: 'cursor: move; touch-action: none' });
+        const ovalAttrs = { cx: pos.x, cy: pos.y, rx, ry, fill: ERD_C.ATTR_FILL, stroke: ERD_C.ATTR_STROKE, 'stroke-width': ERD_DIMS.LINE_W };
+        if (dashed) ovalAttrs['stroke-dasharray'] = '5 3';
+        g.appendChild(mk('ellipse', ovalAttrs));
+        if (doubled) {
+          g.appendChild(mk('ellipse', { cx: pos.x, cy: pos.y, rx: rx - ins, ry: ry - ins, fill: 'none', stroke: ERD_C.ATTR_STROKE, 'stroke-width': ERD_DIMS.LINE_W }));
+        }
+        // Label.
+        const label = a.name || '(unnamed)';
+        g.appendChild(txt(pos.x, pos.y + 1, label, {
+          'text-anchor': 'middle', 'dominant-baseline': 'central',
+          fill: ERD_C.LABEL, 'font-family': "'JetBrains Mono', monospace",
+          'font-size': 11, 'font-weight': a.kind === 'key' || a.kind === 'partial-key' ? 600 : 400,
+        }));
+        // Underline for key / partial-key — drawn as an explicit <line> so it survives PNG/PDF rasterization.
+        if (a.kind === 'key' || a.kind === 'partial-key') {
+          // Approximate text width: 6.6px per char at font-size 11 (JetBrains Mono). Sufficient for the underline length.
+          const halfW = (label.length * 6.6) / 2;
+          const yLine = pos.y + ry / 2 + 1;
+          const lineAttrs = { x1: pos.x - halfW, y1: yLine, x2: pos.x + halfW, y2: yLine, stroke: ERD_C.LABEL, 'stroke-width': 1.2 };
+          if (a.kind === 'partial-key') lineAttrs['stroke-dasharray'] = '4 2';
+          g.appendChild(mk('line', lineAttrs));
+        }
+        svg.appendChild(g);
+      }
+
+      // Single or double connecting line between two points.
+      function drawErdConnector(svg, x1, y1, x2, y2, doubled) {
+        const stroke = ERD_C.LINE;
+        if (!doubled) {
+          svg.appendChild(mk('line', { x1, y1, x2, y2, stroke, 'stroke-width': ERD_DIMS.LINE_W }));
+          return;
+        }
+        const dx = x2 - x1, dy = y2 - y1;
+        const len = Math.max(1, Math.hypot(dx, dy));
+        const ox = -dy / len * (ERD_DIMS.DBL_LINE_GAP / 2);
+        const oy =  dx / len * (ERD_DIMS.DBL_LINE_GAP / 2);
+        svg.appendChild(mk('line', { x1: x1 + ox, y1: y1 + oy, x2: x2 + ox, y2: y2 + oy, stroke, 'stroke-width': ERD_DIMS.LINE_W }));
+        svg.appendChild(mk('line', { x1: x1 - ox, y1: y1 - oy, x2: x2 - ox, y2: y2 - oy, stroke, 'stroke-width': ERD_DIMS.LINE_W }));
+      }
+
       function loadErdSample() {
         const emptyErd = state.erd.entities.length === 0 && state.erd.relationships.length === 0;
         if (!emptyErd && !confirm('Replace your current ERD with the sample?')) return;
