@@ -1851,7 +1851,52 @@
           if (!rpos) return;
           (r.attributes || []).forEach((a) => connectAttributeChain(svg, a, rpos, positions));
         });
-        // Relationship participant connectors are added in Task 12.
+        // Relationship participants → entity centres.
+        state.erd.relationships.forEach((r) => {
+          const rpos = positions[`relationship:${r.id}`];
+          if (!rpos) return;
+          const participantIds = (r.participants || []).map((p) => p.entityId);
+          const isSelf = participantIds.length >= 2 && new Set(participantIds).size === 1;
+          (r.participants || []).forEach((p, idx) => {
+            const epos = positions[`entity:${p.entityId}`];
+            if (!epos) return;
+            // For self-relationships, offset the two endpoints so connectors enter different sides of the same entity.
+            let entryX = epos.x, entryY = epos.y;
+            if (isSelf) {
+              const off = idx === 0 ? -1 : 1;
+              entryY = epos.y + off * (ERD_DIMS.ENT_H / 2 + 20);
+              entryX = epos.x - ERD_DIMS.ENT_W / 4;
+            }
+            drawParticipantConnector(svg, rpos, { x: entryX, y: entryY }, p, isSelf);
+          });
+        });
+      }
+
+      function drawParticipantConnector(svg, rpos, epos, part, isSelf) {
+        const doubled = part.participation === 'total';
+        drawErdConnector(svg, rpos.x, rpos.y, epos.x, epos.y, doubled);
+        // Cardinality label near the diamond.
+        const t = 0.18; // fraction of the way from diamond toward entity
+        const cx = rpos.x + (epos.x - rpos.x) * t;
+        const cy = rpos.y + (epos.y - rpos.y) * t;
+        // Offset label perpendicular to the line so it doesn't sit on the line.
+        const dx = epos.x - rpos.x, dy = epos.y - rpos.y;
+        const len = Math.max(1, Math.hypot(dx, dy));
+        const ox = -dy / len * 10, oy = dx / len * 10;
+        svg.appendChild(txt(cx + ox, cy + oy, part.cardinality, {
+          'text-anchor': 'middle', 'dominant-baseline': 'central',
+          fill: ERD_C.LABEL, 'font-family': "'Inter',sans-serif", 'font-size': 12, 'font-weight': 700,
+        }));
+        // Role label near the entity end (only if non-empty — used mainly for self-relationships).
+        if (part.role) {
+          const rt = 0.78;
+          const rcx = rpos.x + (epos.x - rpos.x) * rt;
+          const rcy = rpos.y + (epos.y - rpos.y) * rt;
+          svg.appendChild(txt(rcx + ox, rcy + oy, part.role, {
+            'text-anchor': 'middle', 'dominant-baseline': 'central',
+            fill: ERD_C.LABEL, 'font-family': "'Inter',sans-serif", 'font-size': 11, 'font-style': 'italic',
+          }));
+        }
       }
 
       // For an attribute tree, connects the root to its owner, and each composite child to its parent.
