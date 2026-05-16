@@ -1784,11 +1784,87 @@
       function renderErdSvg() {
         const svg = document.getElementById('svg');
         while (svg.firstChild) svg.removeChild(svg.firstChild);
-        svg.setAttribute('width', 800);
-        svg.setAttribute('height', 200);
-        const placeholder = mk('text', { x: 400, y: 100, 'text-anchor': 'middle', 'dominant-baseline': 'central', fill: '#94a3b8', 'font-family': "'Inter',sans-serif", 'font-size': 14 });
-        placeholder.textContent = 'ERD renderer not implemented yet';
-        svg.appendChild(placeholder);
+
+        const empty = state.erd.entities.length === 0 && state.erd.relationships.length === 0;
+        if (empty) {
+          svg.setAttribute('width', 800);
+          svg.setAttribute('height', 200);
+          svg.appendChild(txt(400, 100, 'Add an entity to see your ERD here', {
+            'text-anchor': 'middle', 'dominant-baseline': 'central',
+            fill: '#94a3b8', 'font-family': "'Inter',sans-serif", 'font-size': 14,
+          }));
+          return;
+        }
+
+        const positions = layoutErd();
+
+        // Layer order: connectors first, then shapes on top (so shapes paint over lines).
+        drawErdConnectors(svg, positions);
+        drawErdShapes(svg, positions);
+
+        // Resize SVG to bounding box. Pinned x/y is clamped to >= 0 by the drag handler (schema mode);
+        // ERD nodes use centre coords so we add half-shape padding when sizing.
+        let maxX = 0, maxY = 0;
+        Object.values(positions).forEach((p) => {
+          maxX = Math.max(maxX, p.x + 80);
+          maxY = Math.max(maxY, p.y + 40);
+        });
+        svg.setAttribute('width', Math.ceil(maxX + 40));
+        svg.setAttribute('height', Math.ceil(maxY + 40));
+      }
+
+      function drawErdShapes(svg, positions) {
+        // Entities and their attributes (including composite children).
+        state.erd.entities.forEach((e) => {
+          const epos = positions[`entity:${e.id}`];
+          if (!epos) return;
+          drawErdEntity(svg, e, epos);
+          (e.attributes || []).forEach((a) => drawAttributeTree(svg, a, positions));
+        });
+        // Relationships and their attributes.
+        state.erd.relationships.forEach((r) => {
+          const rpos = positions[`relationship:${r.id}`];
+          if (!rpos) return;
+          drawErdRelationship(svg, r, rpos);
+          (r.attributes || []).forEach((a) => drawAttributeTree(svg, a, positions));
+        });
+      }
+
+      function drawAttributeTree(svg, a, positions) {
+        const apos = positions[`attribute:${a.id}`];
+        if (!apos) return;
+        drawErdAttribute(svg, a, apos);
+        (a.children || []).forEach((c) => drawAttributeTree(svg, c, positions));
+      }
+
+      // Connectors are drawn in a separate pass so all shapes can paint over them.
+      function drawErdConnectors(svg, positions) {
+        // Entity attribute → entity centre.
+        state.erd.entities.forEach((e) => {
+          const epos = positions[`entity:${e.id}`];
+          if (!epos) return;
+          (e.attributes || []).forEach((a) => connectAttributeChain(svg, a, epos, positions));
+        });
+        // Relationship attribute → relationship centre.
+        state.erd.relationships.forEach((r) => {
+          const rpos = positions[`relationship:${r.id}`];
+          if (!rpos) return;
+          (r.attributes || []).forEach((a) => connectAttributeChain(svg, a, rpos, positions));
+        });
+        // Relationship participant connectors are added in Task 12.
+      }
+
+      // For an attribute tree, connects the root to its owner, and each composite child to its parent.
+      function connectAttributeChain(svg, a, ownerPos, positions) {
+        const apos = positions[`attribute:${a.id}`];
+        if (!apos) return;
+        drawErdConnector(svg, apos.x, apos.y, ownerPos.x, ownerPos.y, false);
+        (a.children || []).forEach((c) => {
+          const cpos = positions[`attribute:${c.id}`];
+          if (!cpos) return;
+          drawErdConnector(svg, cpos.x, cpos.y, apos.x, apos.y, false);
+          // Children of children: spec disallows (composite nesting depth = 1).
+        });
       }
 
       render();
