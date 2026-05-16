@@ -1280,7 +1280,7 @@
             : state.erd.entities.map(renderEntityCard).join('')}
           <div class="section-head">
             <h2>Relationships</h2>
-            <button class="btn" id="add-relationship" type="button" disabled title="Relationship wiring lands in Task 8">+ Add Relationship</button>
+            <button class="btn" id="add-relationship" type="button" ${state.erd.entities.length < 1 ? 'disabled title="Add an entity first"' : ''}>+ Add Relationship</button>
           </div>
           ${state.erd.relationships.length === 0
             ? `<p style="color:#64748b;font-size:13px">No relationships yet.</p>`
@@ -1379,15 +1379,217 @@
         `;
       }
 
-      // Wiring stub — Task 8 fills this in.
       function wireErdBuilderEvents() {
-        const addBtn = document.getElementById('add-entity');
-        if (addBtn) {
-          addBtn.addEventListener('click', () => {
-            state.erd.entities.push(makeEntity({ attributes: [makeAttribute({ name: 'id', kind: 'key' })] }));
+        // === Helpers ===
+        const findEntity = (el) => state.erd.entities.find((e) => e.id === el.closest('.e-card').dataset.eid);
+        const findRel = (el) => state.erd.relationships.find((r) => r.id === el.closest('.R-card').dataset.rid);
+        const findAttrInList = (list, aid) => (list || []).find((a) => a.id === aid);
+        const findAttrAndOwner = (el) => {
+          // Walks up the DOM to find the attribute row + its owner (entity or relationship)
+          // + whether the attribute is a sub-attribute (nested under a composite parent).
+          const row = el.closest('.attr-row');
+          const aid = row.dataset.aid;
+          const composite = el.closest('[data-attr-host="composite"]');
+          if (composite) {
+            const parentAid = composite.dataset.parentAid;
+            const ownerCard = el.closest('.e-card');         // composites only on entities
+            const entity = state.erd.entities.find((e) => e.id === ownerCard.dataset.eid);
+            const parent = findAttrInList(entity.attributes, parentAid);
+            const attr = (parent.children || []).find((c) => c.id === aid);
+            return { owner: entity, ownerKind: 'entity', parent, attr };
+          }
+          if (el.closest('.e-card')) {
+            const entity = state.erd.entities.find((e) => e.id === el.closest('.e-card').dataset.eid);
+            const attr = findAttrInList(entity.attributes, aid);
+            return { owner: entity, ownerKind: 'entity', parent: null, attr };
+          }
+          if (el.closest('.R-card')) {
+            const rel = state.erd.relationships.find((r) => r.id === el.closest('.R-card').dataset.rid);
+            const attr = findAttrInList(rel.attributes, aid);
+            return { owner: rel, ownerKind: 'relationship', parent: null, attr };
+          }
+          return null;
+        };
+
+        // === Entities ===
+        document.getElementById('add-entity').addEventListener('click', () => {
+          state.erd.entities.push(makeEntity({ attributes: [makeAttribute({ name: 'id', kind: 'key' })] }));
+          render();
+        });
+        document.querySelectorAll('[data-action="ent-name"]').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const ent = findEntity(e.target);
+            if (ent) { ent.name = e.target.value; renderErdSvg(); }
+          });
+        });
+        document.querySelectorAll('[data-action="ent-kind"] button').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const ent = findEntity(e.target);
+            if (!ent) return;
+            ent.kind = e.target.dataset.kind;
+            render();
+          });
+        });
+        document.querySelectorAll('[data-action="delete-entity"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const ent = findEntity(e.target);
+            if (!ent) return;
+            if (!confirm(`Delete entity "${ent.name}"? Relationships referencing it will also be cleaned up.`)) return;
+            const eid = ent.id;
+            state.erd.entities = state.erd.entities.filter((x) => x.id !== eid);
+            state.erd.relationships.forEach((r) => {
+              r.participants = (r.participants || []).filter((p) => p.entityId !== eid);
+            });
+            state.erd.relationships = state.erd.relationships.filter((r) => (r.participants || []).length > 0);
+            render();
+          });
+        });
+        document.querySelectorAll('[data-action="add-entity-attr"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const ent = findEntity(e.target);
+            if (!ent) return;
+            ent.attributes = ent.attributes || [];
+            ent.attributes.push(makeAttribute({ name: '' }));
+            render();
+          });
+        });
+
+        // === Attributes (entity + relationship + sub-attributes) ===
+        document.querySelectorAll('[data-action="attr-name"]').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const found = findAttrAndOwner(e.target);
+            if (!found || !found.attr) return;
+            found.attr.name = e.target.value;
+            renderErdSvg();
+          });
+        });
+        document.querySelectorAll('[data-action="attr-kind"]').forEach((sel) => {
+          sel.addEventListener('change', (e) => {
+            const found = findAttrAndOwner(e.target);
+            if (!found || !found.attr) return;
+            const newKind = e.target.value;
+            // Switching away from composite drops the children; switching to composite ensures an empty array.
+            if (found.attr.kind === 'composite' && newKind !== 'composite') found.attr.children = [];
+            if (newKind === 'composite') found.attr.children = found.attr.children || [];
+            found.attr.kind = newKind;
+            render(); // re-render to show/hide nested children section
+          });
+        });
+        document.querySelectorAll('[data-action="delete-attr"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const found = findAttrAndOwner(e.target);
+            if (!found || !found.attr) return;
+            if (found.parent) {
+              found.parent.children = found.parent.children.filter((c) => c.id !== found.attr.id);
+            } else {
+              found.owner.attributes = found.owner.attributes.filter((a) => a.id !== found.attr.id);
+            }
+            render();
+          });
+        });
+        document.querySelectorAll('[data-action="add-sub-attr"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const composite = e.target.closest('[data-attr-host="composite"]');
+            const parentAid = composite.dataset.parentAid;
+            const ownerCard = e.target.closest('.e-card');
+            const entity = state.erd.entities.find((x) => x.id === ownerCard.dataset.eid);
+            const parent = findAttrInList(entity.attributes, parentAid);
+            parent.children = parent.children || [];
+            parent.children.push(makeAttribute({ name: '' }));
+            render();
+          });
+        });
+
+        // === Relationships ===
+        const addRel = document.getElementById('add-relationship');
+        if (addRel && !addRel.disabled) {
+          addRel.addEventListener('click', () => {
+            state.erd.relationships.push(makeRelationship());
             render();
           });
         }
+        document.querySelectorAll('[data-action="rel-name"]').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const rel = findRel(e.target);
+            if (rel) { rel.name = e.target.value; renderErdSvg(); }
+          });
+        });
+        document.querySelectorAll('[data-action="rel-kind"] button').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const rel = findRel(e.target);
+            if (!rel) return;
+            rel.kind = e.target.dataset.kind;
+            render();
+          });
+        });
+        document.querySelectorAll('[data-action="delete-rel"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const rel = findRel(e.target);
+            if (!rel) return;
+            if (!confirm(`Delete relationship "${rel.name}"?`)) return;
+            state.erd.relationships = state.erd.relationships.filter((x) => x.id !== rel.id);
+            render();
+          });
+        });
+        document.querySelectorAll('[data-action="add-part"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const rel = findRel(e.target);
+            if (!rel) return;
+            rel.participants = rel.participants || [];
+            if (rel.participants.length >= 3) return;
+            rel.participants.push(makeParticipant());
+            render();
+          });
+        });
+        document.querySelectorAll('[data-action="add-rel-attr"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const rel = findRel(e.target);
+            if (!rel) return;
+            rel.attributes = rel.attributes || [];
+            rel.attributes.push(makeAttribute({ name: '' }));
+            render();
+          });
+        });
+
+        // === Participants ===
+        const findPart = (el) => {
+          const rel = findRel(el);
+          if (!rel) return { rel: null, part: null };
+          const pid = el.closest('.part-row').dataset.pid;
+          return { rel, part: (rel.participants || []).find((p) => p.id === pid) };
+        };
+        document.querySelectorAll('[data-action="part-entity"]').forEach((sel) => {
+          sel.addEventListener('change', (e) => {
+            const { part } = findPart(e.target);
+            if (part) { part.entityId = e.target.value; renderErdSvg(); }
+          });
+        });
+        document.querySelectorAll('[data-action="part-role"]').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const { part } = findPart(e.target);
+            if (part) { part.role = e.target.value; renderErdSvg(); }
+          });
+        });
+        document.querySelectorAll('[data-action="part-card"]').forEach((sel) => {
+          sel.addEventListener('change', (e) => {
+            const { part } = findPart(e.target);
+            if (part) { part.cardinality = e.target.value; renderErdSvg(); }
+          });
+        });
+        document.querySelectorAll('[data-action="part-part"]').forEach((sel) => {
+          sel.addEventListener('change', (e) => {
+            const { part } = findPart(e.target);
+            if (part) { part.participation = e.target.value; renderErdSvg(); }
+          });
+        });
+        document.querySelectorAll('[data-action="delete-part"]').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const { rel, part } = findPart(e.target);
+            if (!rel || !part) return;
+            rel.participants = rel.participants.filter((x) => x.id !== part.id);
+            render();
+          });
+        });
       }
       function renderErdSvg() {
         const svg = document.getElementById('svg');
