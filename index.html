@@ -1067,10 +1067,17 @@
         document.addEventListener('pointermove', (e) => {
           if (!drag) return;
           const pt = toSvg(e);
-          drag.ref.x = Math.max(0, pt.x - drag.offX);
-          drag.ref.y = Math.max(0, pt.y - drag.offY);
-          if (state.mode === 'schema') renderSchemaSvg();
-          else renderErdSvg();
+          // Schema tables use top-left coordinates so clamp to >=0; ERD nodes use centre coordinates
+          // and clamping at zero would cut them in half. Let the renderer handle bounds via SVG sizing.
+          if (state.mode === 'schema') {
+            drag.ref.x = Math.max(0, pt.x - drag.offX);
+            drag.ref.y = Math.max(0, pt.y - drag.offY);
+            renderSchemaSvg();
+          } else {
+            drag.ref.x = pt.x - drag.offX;
+            drag.ref.y = pt.y - drag.offY;
+            renderErdSvg();
+          }
         });
         const endDrag = (e) => {
           if (!drag) return;
