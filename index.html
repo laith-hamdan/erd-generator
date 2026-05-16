@@ -923,17 +923,23 @@
       }
 
       async function downloadPng() {
-        if (state.schema.tables.length === 0) { alert('Add at least one table first.'); return; }
+        const empty = state.mode === 'schema'
+          ? state.schema.tables.length === 0
+          : (state.erd.entities.length === 0 && state.erd.relationships.length === 0);
+        if (empty) { alert('Add something to the diagram first.'); return; }
         const { canvas } = await svgToCanvas(2);
         canvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob);
-          downloadHref(url, 'schema.png');
+          downloadHref(url, state.mode === 'schema' ? 'schema.png' : 'erd.png');
           setTimeout(() => URL.revokeObjectURL(url), 1000);
         }, 'image/png');
       }
 
       async function downloadPdf() {
-        if (state.schema.tables.length === 0) { alert('Add at least one table first.'); return; }
+        const empty = state.mode === 'schema'
+          ? state.schema.tables.length === 0
+          : (state.erd.entities.length === 0 && state.erd.relationships.length === 0);
+        if (empty) { alert('Add something to the diagram first.'); return; }
         const { canvas, w, h } = await svgToCanvas(2);
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
@@ -942,10 +948,10 @@
           format: [w, h],
         });
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, w, h);
-        pdf.save('schema.pdf');
+        pdf.save(state.mode === 'schema' ? 'schema.pdf' : 'erd.pdf');
       }
 
-      function loadSample() {
+      function loadSchemaSample() {
         if (state.schema.tables.length > 0 && !confirm('Replace your current diagram with the sample?')) return;
         _idSeq = 0;
 
@@ -972,16 +978,32 @@
         render();
       }
 
-      document.getElementById('btn-sample').addEventListener('click', loadSample);
+      document.getElementById('btn-sample').addEventListener('click', () => {
+        if (state.mode === 'schema') loadSchemaSample();
+        else loadErdSample();
+      });
       document.getElementById('btn-reset').addEventListener('click', () => {
-        if (state.schema.tables.length === 0 || confirm('Clear everything?')) {
-          state.schema = { tables: [] };
-          render();
+        if (state.mode === 'schema') {
+          if (state.schema.tables.length === 0 || confirm('Clear everything?')) {
+            state.schema = { tables: [] };
+            render();
+          }
+        } else {
+          if ((state.erd.entities.length === 0 && state.erd.relationships.length === 0) || confirm('Clear everything?')) {
+            state.erd = { entities: [], relationships: [] };
+            render();
+          }
         }
       });
       document.getElementById('btn-reset-layout').addEventListener('click', () => {
-        state.schema.tables.forEach((t) => { delete t.x; delete t.y; });
-        renderSchemaSvg();
+        if (state.mode === 'schema') {
+          state.schema.tables.forEach((t) => { delete t.x; delete t.y; });
+          renderSchemaSvg();
+        } else {
+          state.erd.entities.forEach((e) => { delete e.x; delete e.y; (e.attributes || []).forEach(clearAttrPin); });
+          state.erd.relationships.forEach((r) => { delete r.x; delete r.y; (r.attributes || []).forEach(clearAttrPin); });
+          renderErdSvg();
+        }
       });
       document.getElementById('btn-png').addEventListener('click', downloadPng);
       document.getElementById('btn-pdf').addEventListener('click', downloadPdf);
@@ -1037,6 +1059,15 @@
         document.addEventListener('pointerup', endDrag);
         document.addEventListener('pointercancel', endDrag);
       })();
+
+      function loadErdSample() {
+        alert('ERD sample not implemented yet.');
+      }
+
+      function clearAttrPin(a) {
+        delete a.x; delete a.y;
+        (a.children || []).forEach(clearAttrPin);
+      }
 
       function renderErdBuilder() {
         document.getElementById('builder').innerHTML = '<p style="color:#64748b;font-size:13px">ERD mode coming online…</p>';
