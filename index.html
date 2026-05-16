@@ -1028,27 +1028,49 @@
           const r = svgEl.getBoundingClientRect();
           return { x: evt.clientX - r.left, y: evt.clientY - r.top };
         };
+
+        // Returns { ref, pos } for the schema/erd node under the pointer, or null.
+        function findDragTarget(e) {
+          // Schema mode: table drag.
+          const schHandle = e.target.closest('[data-table-drag]');
+          if (schHandle && state.mode === 'schema') {
+            const tid = schHandle.getAttribute('data-table-drag');
+            const t = state.schema.tables.find((tt) => tt.id === tid);
+            if (!t) return null;
+            const pos = layoutTables()[tid];
+            return { ref: t, pos };
+          }
+          // ERD mode: entity / relationship / attribute drag.
+          const erdHandle = e.target.closest('[data-erd-drag]');
+          if (erdHandle && state.mode === 'erd') {
+            const key = erdHandle.getAttribute('data-erd-drag'); // "<kind>:<id>"
+            const [kind, id] = key.split(':');
+            const target = findErdNode(kind, id);
+            if (!target) return null;
+            const positions = layoutErd();
+            const pos = positions[key];
+            if (!pos) return null;
+            return { ref: target, pos };
+          }
+          return null;
+        }
+
         svgEl.addEventListener('pointerdown', (e) => {
-          const handle = e.target.closest('[data-table-drag]');
-          if (!handle) return;
-          const tid = handle.getAttribute('data-table-drag');
-          const t = state.schema.tables.find((t) => t.id === tid);
+          const t = findDragTarget(e);
           if (!t) return;
-          const pos = layoutTables()[tid];
           const pt = toSvg(e);
-          drag = { tid, offX: pt.x - pos.x, offY: pt.y - pos.y, pointerId: e.pointerId };
+          drag = { ref: t.ref, offX: pt.x - t.pos.x, offY: pt.y - t.pos.y, pointerId: e.pointerId };
           document.body.style.userSelect = 'none';
           try { svgEl.setPointerCapture(e.pointerId); } catch (_) {}
           e.preventDefault();
         });
         document.addEventListener('pointermove', (e) => {
           if (!drag) return;
-          const t = state.schema.tables.find((t) => t.id === drag.tid);
-          if (!t) return;
           const pt = toSvg(e);
-          t.x = Math.max(0, pt.x - drag.offX);
-          t.y = Math.max(0, pt.y - drag.offY);
-          renderSchemaSvg();
+          drag.ref.x = Math.max(0, pt.x - drag.offX);
+          drag.ref.y = Math.max(0, pt.y - drag.offY);
+          if (state.mode === 'schema') renderSchemaSvg();
+          else renderErdSvg();
         });
         const endDrag = (e) => {
           if (!drag) return;
@@ -1068,6 +1090,9 @@
         delete a.x; delete a.y;
         (a.children || []).forEach(clearAttrPin);
       }
+
+      function findErdNode(kind, id) { return null; }
+      function layoutErd() { return {}; }
 
       function renderErdBuilder() {
         document.getElementById('builder').innerHTML = '<p style="color:#64748b;font-size:13px">ERD mode coming online…</p>';
