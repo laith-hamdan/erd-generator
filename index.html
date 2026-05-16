@@ -1410,13 +1410,16 @@
           if (pinned) {
             positions[`relationship:${r.id}`] = { x: r.x, y: r.y };
           } else {
-            const pts = (r.participants || [])
+            const participants = r.participants || [];
+            const pts = participants
               .map((p) => positions[`entity:${p.entityId}`])
               .filter(Boolean);
+            const distinctEntityIds = new Set(participants.map((p) => p.entityId));
+            const isUnary = pts.length > 0 && distinctEntityIds.size === 1;
             if (pts.length === 0) {
               positions[`relationship:${r.id}`] = { x: ENT_X0, y: ENT_Y0 - 200 };
-            } else if (pts.length === 1 || (pts.length === 2 && pts[0] === pts[1])) {
-              // Unary — offset to the left of the entity.
+            } else if (isUnary) {
+              // Unary self-relationship — offset to the left of the participant entity.
               positions[`relationship:${r.id}`] = { x: pts[0].x - 200, y: pts[0].y };
             } else {
               const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
