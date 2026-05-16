@@ -1280,7 +1280,7 @@
             : state.erd.entities.map(renderEntityCard).join('')}
           <div class="section-head">
             <h2>Relationships</h2>
-            <button class="btn" id="add-relationship" type="button" ${state.erd.entities.length < 1 ? 'disabled title="Add an entity first"' : ''}>+ Add Relationship</button>
+            <button class="btn" id="add-relationship" type="button" disabled title="Relationship wiring lands in Task 8">+ Add Relationship</button>
           </div>
           ${state.erd.relationships.length === 0
             ? `<p style="color:#64748b;font-size:13px">No relationships yet.</p>`
@@ -1342,7 +1342,7 @@
         const addBtn = document.getElementById('add-entity');
         if (addBtn) {
           addBtn.addEventListener('click', () => {
-            state.erd.entities.push(makeEntity({ name: `ENTITY_${state.erd.entities.length + 1}`, attributes: [makeAttribute({ name: 'id', kind: 'key' })] }));
+            state.erd.entities.push(makeEntity({ attributes: [makeAttribute({ name: 'id', kind: 'key' })] }));
             render();
           });
         }
