@@ -232,7 +232,7 @@
       .attr-children { margin-left: 16px; padding-left: 8px; border-left: 2px solid #e2e8f0; }
       .section-head { display: flex; justify-content: space-between; align-items: center; margin: 14px 0 8px; }
       .section-head h2 { font-size: 14px; font-weight: 700; color: #0f172a; }
-      .part-row { display: grid; grid-template-columns: 1fr 1fr 60px 90px 24px; gap: 6px; align-items: center; margin-bottom: 4px; }
+      .part-row { display: grid; grid-template-columns: 1fr 1fr 70px 110px 24px; gap: 6px; align-items: center; margin-bottom: 4px; }
       .part-row select, .part-row input { padding: 5px 6px; border: 1px solid #cbd5e1; border-radius: 3px; font-family: "JetBrains Mono", monospace; font-size: 11px; }
     </style>
   </head>
@@ -258,8 +258,8 @@
       </h1>
       <p class="sub">Design your database schema and export it</p>
       <div class="mode-switch" role="group" aria-label="Diagram mode">
-        <button type="button" id="mode-schema" class="active" aria-pressed="true">Schema</button>
-        <button type="button" id="mode-erd" aria-pressed="false">ERD</button>
+        <button type="button" id="mode-schema" aria-pressed="false">Schema</button>
+        <button type="button" id="mode-erd" class="active" aria-pressed="true">ERD</button>
       </div>
       <div class="actions">
         <button class="btn ghost" id="btn-sample" type="button">Load Sample</button>
@@ -316,7 +316,7 @@
       const uid = (p) => `${p}${++_idSeq}`;
 
       let state = {
-        mode: 'schema',
+        mode: 'erd',
         schema: { tables: [] },
         erd: { entities: [], relationships: [] },
       };
@@ -1290,7 +1290,7 @@
         if (!emptyErd && !confirm('Replace your current ERD with the sample?')) return;
         _idSeq = 0;
 
-        const employee = makeEntity({ name: 'EMPLOYEE', kind: 'strong', attributes: [
+        const employee = makeEntity({ name: 'EMPLOYEE', kind: 'strong', x: 320, y: 420, attributes: [
           makeAttribute({ name: 'Ssn', kind: 'key' }),
           makeAttribute({ name: 'Name', kind: 'composite', children: [
             makeAttribute({ name: 'Fname', kind: 'simple' }),
@@ -1302,49 +1302,49 @@
           makeAttribute({ name: 'Sex', kind: 'simple' }),
           makeAttribute({ name: 'Salary', kind: 'simple' }),
         ]});
-        const department = makeEntity({ name: 'DEPARTMENT', kind: 'strong', attributes: [
+        const department = makeEntity({ name: 'DEPARTMENT', kind: 'strong', x: 980, y: 240, attributes: [
           makeAttribute({ name: 'Name', kind: 'key' }),
           makeAttribute({ name: 'Number', kind: 'key' }),
           makeAttribute({ name: 'Locations', kind: 'multivalued' }),
           makeAttribute({ name: 'Number_of_employees', kind: 'derived' }),
         ]});
-        const project = makeEntity({ name: 'PROJECT', kind: 'strong', attributes: [
+        const project = makeEntity({ name: 'PROJECT', kind: 'strong', x: 1180, y: 560, attributes: [
           makeAttribute({ name: 'Name', kind: 'key' }),
           makeAttribute({ name: 'Number', kind: 'key' }),
           makeAttribute({ name: 'Location', kind: 'simple' }),
         ]});
-        const dependent = makeEntity({ name: 'DEPENDENT', kind: 'weak', attributes: [
+        const dependent = makeEntity({ name: 'DEPENDENT', kind: 'weak', x: 540, y: 880, attributes: [
           makeAttribute({ name: 'Name', kind: 'partial-key' }),
           makeAttribute({ name: 'Sex', kind: 'simple' }),
           makeAttribute({ name: 'Birth_date', kind: 'simple' }),
           makeAttribute({ name: 'Relationship', kind: 'simple' }),
         ]});
 
-        const worksFor = makeRelationship({ name: 'WORKS_FOR', kind: 'normal', participants: [
+        const worksFor = makeRelationship({ name: 'WORKS_FOR', kind: 'normal', x: 640, y: 280, participants: [
           makeParticipant({ entityId: employee.id, cardinality: 'N', participation: 'total' }),
           makeParticipant({ entityId: department.id, cardinality: '1', participation: 'total' }),
         ]});
-        const manages = makeRelationship({ name: 'MANAGES', kind: 'normal', attributes: [
+        const manages = makeRelationship({ name: 'MANAGES', kind: 'normal', x: 640, y: 400, attributes: [
           makeAttribute({ name: 'Start_date', kind: 'simple' }),
         ], participants: [
           makeParticipant({ entityId: employee.id, cardinality: '1', participation: 'partial' }),
           makeParticipant({ entityId: department.id, cardinality: '1', participation: 'total' }),
         ]});
-        const controls = makeRelationship({ name: 'CONTROLS', kind: 'normal', participants: [
+        const controls = makeRelationship({ name: 'CONTROLS', kind: 'normal', x: 1080, y: 400, participants: [
           makeParticipant({ entityId: department.id, cardinality: '1', participation: 'partial' }),
           makeParticipant({ entityId: project.id, cardinality: 'N', participation: 'total' }),
         ]});
-        const worksOn = makeRelationship({ name: 'WORKS_ON', kind: 'normal', attributes: [
+        const worksOn = makeRelationship({ name: 'WORKS_ON', kind: 'normal', x: 740, y: 600, attributes: [
           makeAttribute({ name: 'Hours', kind: 'simple' }),
         ], participants: [
           makeParticipant({ entityId: employee.id, cardinality: 'M', participation: 'partial' }),
           makeParticipant({ entityId: project.id, cardinality: 'N', participation: 'total' }),
         ]});
-        const supervision = makeRelationship({ name: 'SUPERVISION', kind: 'normal', participants: [
+        const supervision = makeRelationship({ name: 'SUPERVISION', kind: 'normal', x: 120, y: 420, participants: [
           makeParticipant({ entityId: employee.id, role: 'Supervisor', cardinality: '1', participation: 'partial' }),
           makeParticipant({ entityId: employee.id, role: 'Supervisee', cardinality: 'N', participation: 'partial' }),
         ]});
-        const dependentsOf = makeRelationship({ name: 'DEPENDENTS_OF', kind: 'identifying', participants: [
+        const dependentsOf = makeRelationship({ name: 'DEPENDENTS_OF', kind: 'identifying', x: 420, y: 640, participants: [
           makeParticipant({ entityId: employee.id, cardinality: '1', participation: 'partial' }),
           makeParticipant({ entityId: dependent.id, cardinality: 'N', participation: 'total' }),
         ]});
@@ -1861,12 +1861,13 @@
           (r.participants || []).forEach((p, idx) => {
             const epos = positions[`entity:${p.entityId}`];
             if (!epos) return;
-            // For self-relationships, offset the two endpoints so connectors enter different sides of the same entity.
+            // For self-relationships, both lines attach to the LEFT edge of the entity at offset y positions,
+            // since the unary diamond is positioned to the left of the entity centre.
             let entryX = epos.x, entryY = epos.y;
             if (isSelf) {
               const off = idx === 0 ? -1 : 1;
-              entryY = epos.y + off * (ERD_DIMS.ENT_H / 2 + 20);
-              entryX = epos.x - ERD_DIMS.ENT_W / 4;
+              entryX = epos.x - ERD_DIMS.ENT_W / 2;       // on the left edge of the entity rectangle
+              entryY = epos.y + off * (ERD_DIMS.ENT_H / 4); // upper-third / lower-third of the entity height
             }
             drawParticipantConnector(svg, rpos, { x: entryX, y: entryY }, p, isSelf);
           });
