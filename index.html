@@ -1356,7 +1356,91 @@
         render();
       }
 
-      function layoutErd() { return {}; }
+      // Computes positions keyed by "<kind>:<id>" for every entity, relationship, and attribute.
+      // Auto-layout is overridden by any pinned x/y stored on the data object (set via drag).
+      function layoutErd() {
+        const positions = {};
+        const ENT_COLS = 3;
+        const ENT_GAP_X = 280, ENT_GAP_Y = 280, ENT_X0 = 180, ENT_Y0 = 120;
+
+        // 1. Entities in a grid.
+        state.erd.entities.forEach((e, i) => {
+          const col = i % ENT_COLS, row = Math.floor(i / ENT_COLS);
+          const auto = { x: ENT_X0 + col * ENT_GAP_X, y: ENT_Y0 + row * ENT_GAP_Y };
+          const pinned = typeof e.x === 'number' && typeof e.y === 'number';
+          positions[`entity:${e.id}`] = pinned ? { x: e.x, y: e.y } : auto;
+        });
+
+        // 2. Attribute fan layout — for each entity, place attribute ovals on a ring above the entity.
+        //    Skips pinned attributes.
+        state.erd.entities.forEach((e) => {
+          const center = positions[`entity:${e.id}`];
+          const attrs = e.attributes || [];
+          const R = 110; // ring radius from entity centre
+          attrs.forEach((a, i) => {
+            const pinned = typeof a.x === 'number' && typeof a.y === 'number';
+            if (pinned) {
+              positions[`attribute:${a.id}`] = { x: a.x, y: a.y };
+            } else {
+              const n = attrs.length;
+              // Sweep angles place attributes on a fan above the entity.
+              const tStart = -Math.PI * 1.0, tEnd = -Math.PI * 0.05;
+              const t = n === 1 ? (tStart + tEnd) / 2 : tStart + (tEnd - tStart) * (i / (n - 1));
+              positions[`attribute:${a.id}`] = { x: center.x + R * Math.cos(t), y: center.y + R * Math.sin(t) };
+            }
+            // Composite children — fan above the parent attribute.
+            (a.children || []).forEach((c, j) => {
+              const pPos = positions[`attribute:${a.id}`];
+              const pinnedC = typeof c.x === 'number' && typeof c.y === 'number';
+              if (pinnedC) {
+                positions[`attribute:${c.id}`] = { x: c.x, y: c.y };
+                return;
+              }
+              const m = (a.children || []).length;
+              const ang = -Math.PI / 2 + (j - (m - 1) / 2) * 0.5;
+              const r = 80;
+              positions[`attribute:${c.id}`] = { x: pPos.x + r * Math.cos(ang), y: pPos.y + r * Math.sin(ang) };
+            });
+          });
+        });
+
+        // 3. Relationships — centroid of participants. Self-relationships get an offset.
+        state.erd.relationships.forEach((r) => {
+          const pinned = typeof r.x === 'number' && typeof r.y === 'number';
+          if (pinned) {
+            positions[`relationship:${r.id}`] = { x: r.x, y: r.y };
+          } else {
+            const pts = (r.participants || [])
+              .map((p) => positions[`entity:${p.entityId}`])
+              .filter(Boolean);
+            if (pts.length === 0) {
+              positions[`relationship:${r.id}`] = { x: ENT_X0, y: ENT_Y0 - 200 };
+            } else if (pts.length === 1 || (pts.length === 2 && pts[0] === pts[1])) {
+              // Unary — offset to the left of the entity.
+              positions[`relationship:${r.id}`] = { x: pts[0].x - 200, y: pts[0].y };
+            } else {
+              const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+              const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
+              positions[`relationship:${r.id}`] = { x: cx, y: cy };
+            }
+          }
+          // Relationship attributes — fan above the diamond.
+          const center = positions[`relationship:${r.id}`];
+          (r.attributes || []).forEach((a, i) => {
+            const pinnedA = typeof a.x === 'number' && typeof a.y === 'number';
+            if (pinnedA) {
+              positions[`attribute:${a.id}`] = { x: a.x, y: a.y };
+            } else {
+              const n = (r.attributes || []).length;
+              const ang = -Math.PI / 2 + (i - (n - 1) / 2) * 0.5;
+              const R = 80;
+              positions[`attribute:${a.id}`] = { x: center.x + R * Math.cos(ang), y: center.y + R * Math.sin(ang) };
+            }
+          });
+        });
+
+        return positions;
+      }
 
       const ATTR_KIND_OPTIONS = [
         { v: 'simple',      label: 'Simple' },
