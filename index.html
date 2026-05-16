@@ -1128,6 +1128,7 @@
       function makeRelationship(overrides = {}) {
         const n = state.erd.relationships.length + 1;
         return {
+          // Uppercase 'R' disambiguates from schema's makeRelation which uses 'r'.
           id: uid('R'),
           name: `RELATIONSHIP_${n}`,
           kind: 'normal',           // 'normal' | 'identifying'
@@ -1170,6 +1171,7 @@
       function loadErdSample() {
         const emptyErd = state.erd.entities.length === 0 && state.erd.relationships.length === 0;
         if (!emptyErd && !confirm('Replace your current ERD with the sample?')) return;
+        _idSeq = 0;
 
         const employee = makeEntity({ name: 'EMPLOYEE', kind: 'strong', attributes: [
           makeAttribute({ name: 'Ssn', kind: 'key' }),
