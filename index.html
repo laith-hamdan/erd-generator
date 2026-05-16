@@ -1198,6 +1198,7 @@
         REL_W: 130, REL_H: 60, REL_DBL_INSET: 5,
         ATTR_RX: 50, ATTR_RY: 16, ATTR_DBL_INSET: 4,
         LINE_W: 1.4, DBL_LINE_GAP: 3,
+        UNDERLINE_W: 1.2, UNDERLINE_OFFSET_Y: 6,
       };
 
       // Draws an entity rectangle (double-bordered if weak). Returns the wrapping <g>.
@@ -1260,8 +1261,9 @@
         if (a.kind === 'key' || a.kind === 'partial-key') {
           // Approximate text width: 6.6px per char at font-size 11 (JetBrains Mono). Sufficient for the underline length.
           const halfW = (label.length * 6.6) / 2;
-          const yLine = pos.y + ry / 2 + 1;
-          const lineAttrs = { x1: pos.x - halfW, y1: yLine, x2: pos.x + halfW, y2: yLine, stroke: ERD_C.LABEL, 'stroke-width': 1.2 };
+          // Underline sits just below the text baseline, independent of ATTR_RY so it stays attached to the label.
+          const yLine = pos.y + ERD_DIMS.UNDERLINE_OFFSET_Y;
+          const lineAttrs = { x1: pos.x - halfW, y1: yLine, x2: pos.x + halfW, y2: yLine, stroke: ERD_C.LABEL, 'stroke-width': ERD_DIMS.UNDERLINE_W };
           if (a.kind === 'partial-key') lineAttrs['stroke-dasharray'] = '4 2';
           g.appendChild(mk('line', lineAttrs));
         }
