@@ -71,9 +71,6 @@
         background: #1e3a5f;
         color: #ffffff;
       }
-      @media (max-width: 600px) {
-        .mode-switch button { padding: 5px 14px; font-size: 11px; }
-      }
       .btn {
         appearance: none;
         border: 1px solid #1e3a5f;
@@ -117,6 +114,7 @@
         .sub { font-size: 11px; }
         .btn { padding: 7px 12px; font-size: 11px; }
         .actions { gap: 6px; }
+        .mode-switch button { padding: 5px 14px; font-size: 11px; }
         .card { padding: 14px; }
         footer.page { padding: 8px 0; }
       }
@@ -245,9 +243,9 @@
         <span>Schema Generator</span>
       </h1>
       <p class="sub">Design your database schema and export it</p>
-      <div class="mode-switch" role="tablist" aria-label="Diagram mode">
-        <button type="button" id="mode-schema" class="active" role="tab" aria-selected="true">Schema</button>
-        <button type="button" id="mode-erd" role="tab" aria-selected="false">ERD</button>
+      <div class="mode-switch" role="group" aria-label="Diagram mode">
+        <button type="button" id="mode-schema" class="active" aria-pressed="true">Schema</button>
+        <button type="button" id="mode-erd" aria-pressed="false">ERD</button>
       </div>
       <div class="actions">
         <button class="btn ghost" id="btn-sample" type="button">Load Sample</button>
@@ -992,9 +990,9 @@
         if (state.mode === newMode) return;
         state.mode = newMode;
         document.getElementById('mode-schema').classList.toggle('active', newMode === 'schema');
-        document.getElementById('mode-schema').setAttribute('aria-selected', String(newMode === 'schema'));
+        document.getElementById('mode-schema').setAttribute('aria-pressed', String(newMode === 'schema'));
         document.getElementById('mode-erd').classList.toggle('active', newMode === 'erd');
-        document.getElementById('mode-erd').setAttribute('aria-selected', String(newMode === 'erd'));
+        document.getElementById('mode-erd').setAttribute('aria-pressed', String(newMode === 'erd'));
         render();
       }
       document.getElementById('mode-schema').addEventListener('click', () => setMode('schema'));
