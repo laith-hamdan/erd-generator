@@ -1089,8 +1089,77 @@
         document.addEventListener('pointercancel', endDrag);
       })();
 
-      function loadErdSample() {
-        alert('ERD sample not implemented yet.');
+      // ============================================================================
+      // ERD MODE: data factories, sample, lookups
+      // ============================================================================
+
+      function makeAttribute(overrides = {}) {
+        return {
+          id: uid('a'),
+          name: 'attribute',
+          kind: 'simple',           // 'simple' | 'key' | 'partial-key' | 'composite' | 'multivalued' | 'derived'
+          children: [],             // only used for kind === 'composite'
+          ...overrides,
+        };
+      }
+
+      function makeEntity(overrides = {}) {
+        const n = state.erd.entities.length + 1;
+        return {
+          id: uid('e'),
+          name: `ENTITY_${n}`,
+          kind: 'strong',           // 'strong' | 'weak'
+          attributes: [],
+          ...overrides,
+        };
+      }
+
+      function makeParticipant(overrides = {}) {
+        return {
+          id: uid('p'),
+          entityId: '',
+          role: '',
+          cardinality: '1',         // '1' | 'N' | 'M'
+          participation: 'partial', // 'total' | 'partial'
+          ...overrides,
+        };
+      }
+
+      function makeRelationship(overrides = {}) {
+        const n = state.erd.relationships.length + 1;
+        return {
+          id: uid('R'),
+          name: `RELATIONSHIP_${n}`,
+          kind: 'normal',           // 'normal' | 'identifying'
+          attributes: [],
+          participants: [],
+          ...overrides,
+        };
+      }
+
+      function findErdNode(kind, id) {
+        if (kind === 'entity') return state.erd.entities.find((e) => e.id === id) || null;
+        if (kind === 'relationship') return state.erd.relationships.find((r) => r.id === id) || null;
+        if (kind === 'attribute') {
+          const search = (list) => {
+            for (const a of list) {
+              if (a.id === id) return a;
+              const inner = search(a.children || []);
+              if (inner) return inner;
+            }
+            return null;
+          };
+          for (const e of state.erd.entities) {
+            const a = search(e.attributes || []);
+            if (a) return a;
+          }
+          for (const r of state.erd.relationships) {
+            const a = search(r.attributes || []);
+            if (a) return a;
+          }
+          return null;
+        }
+        return null;
       }
 
       function clearAttrPin(a) {
@@ -1098,7 +1167,76 @@
         (a.children || []).forEach(clearAttrPin);
       }
 
-      function findErdNode(kind, id) { return null; }
+      function loadErdSample() {
+        const emptyErd = state.erd.entities.length === 0 && state.erd.relationships.length === 0;
+        if (!emptyErd && !confirm('Replace your current ERD with the sample?')) return;
+
+        const employee = makeEntity({ name: 'EMPLOYEE', kind: 'strong', attributes: [
+          makeAttribute({ name: 'Ssn', kind: 'key' }),
+          makeAttribute({ name: 'Name', kind: 'composite', children: [
+            makeAttribute({ name: 'Fname', kind: 'simple' }),
+            makeAttribute({ name: 'Minit', kind: 'simple' }),
+            makeAttribute({ name: 'Lname', kind: 'simple' }),
+          ]}),
+          makeAttribute({ name: 'Bdate', kind: 'simple' }),
+          makeAttribute({ name: 'Address', kind: 'simple' }),
+          makeAttribute({ name: 'Sex', kind: 'simple' }),
+          makeAttribute({ name: 'Salary', kind: 'simple' }),
+        ]});
+        const department = makeEntity({ name: 'DEPARTMENT', kind: 'strong', attributes: [
+          makeAttribute({ name: 'Name', kind: 'key' }),
+          makeAttribute({ name: 'Number', kind: 'key' }),
+          makeAttribute({ name: 'Locations', kind: 'multivalued' }),
+          makeAttribute({ name: 'Number_of_employees', kind: 'derived' }),
+        ]});
+        const project = makeEntity({ name: 'PROJECT', kind: 'strong', attributes: [
+          makeAttribute({ name: 'Name', kind: 'key' }),
+          makeAttribute({ name: 'Number', kind: 'key' }),
+          makeAttribute({ name: 'Location', kind: 'simple' }),
+        ]});
+        const dependent = makeEntity({ name: 'DEPENDENT', kind: 'weak', attributes: [
+          makeAttribute({ name: 'Name', kind: 'partial-key' }),
+          makeAttribute({ name: 'Sex', kind: 'simple' }),
+          makeAttribute({ name: 'Birth_date', kind: 'simple' }),
+          makeAttribute({ name: 'Relationship', kind: 'simple' }),
+        ]});
+
+        const worksFor = makeRelationship({ name: 'WORKS_FOR', kind: 'normal', participants: [
+          makeParticipant({ entityId: employee.id, cardinality: 'N', participation: 'total' }),
+          makeParticipant({ entityId: department.id, cardinality: '1', participation: 'total' }),
+        ]});
+        const manages = makeRelationship({ name: 'MANAGES', kind: 'normal', attributes: [
+          makeAttribute({ name: 'Start_date', kind: 'simple' }),
+        ], participants: [
+          makeParticipant({ entityId: employee.id, cardinality: '1', participation: 'partial' }),
+          makeParticipant({ entityId: department.id, cardinality: '1', participation: 'total' }),
+        ]});
+        const controls = makeRelationship({ name: 'CONTROLS', kind: 'normal', participants: [
+          makeParticipant({ entityId: department.id, cardinality: '1', participation: 'partial' }),
+          makeParticipant({ entityId: project.id, cardinality: 'N', participation: 'total' }),
+        ]});
+        const worksOn = makeRelationship({ name: 'WORKS_ON', kind: 'normal', attributes: [
+          makeAttribute({ name: 'Hours', kind: 'simple' }),
+        ], participants: [
+          makeParticipant({ entityId: employee.id, cardinality: 'M', participation: 'partial' }),
+          makeParticipant({ entityId: project.id, cardinality: 'N', participation: 'total' }),
+        ]});
+        const supervision = makeRelationship({ name: 'SUPERVISION', kind: 'normal', participants: [
+          makeParticipant({ entityId: employee.id, role: 'Supervisor', cardinality: '1', participation: 'partial' }),
+          makeParticipant({ entityId: employee.id, role: 'Supervisee', cardinality: 'N', participation: 'partial' }),
+        ]});
+        const dependentsOf = makeRelationship({ name: 'DEPENDENTS_OF', kind: 'identifying', participants: [
+          makeParticipant({ entityId: employee.id, cardinality: '1', participation: 'partial' }),
+          makeParticipant({ entityId: dependent.id, cardinality: 'N', participation: 'total' }),
+        ]});
+
+        state.erd = {
+          entities: [employee, department, project, dependent],
+          relationships: [worksFor, manages, controls, worksOn, supervision, dependentsOf],
+        };
+        render();
+      }
+
       function layoutErd() { return {}; }
 
       function renderErdBuilder() {
