@@ -220,6 +220,20 @@
         padding: 6px 8px; border-radius: 5px; line-height: 1.4;
       }
       .rel-warn strong { font-family: "JetBrains Mono", monospace; font-weight: 600; }
+      .e-card, .R-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 12px; background: #ffffff; }
+      .e-head, .R-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+      .e-name, .R-name { flex: 1; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 600; }
+      .kind-toggle { display: inline-flex; background: #f1f5f9; border-radius: 4px; padding: 2px; }
+      .kind-toggle button { background: transparent; border: 0; padding: 4px 10px; font-size: 11px; font-weight: 600; color: #475569; border-radius: 3px; cursor: pointer; }
+      .kind-toggle button.active { background: #1e3a5f; color: #ffffff; }
+      .attr-list { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+      .attr-row { display: grid; grid-template-columns: 1fr 150px 24px; gap: 6px; align-items: center; }
+      .attr-row input, .attr-row select { padding: 5px 6px; border: 1px solid #cbd5e1; border-radius: 3px; font-family: "JetBrains Mono", monospace; font-size: 11px; }
+      .attr-children { margin-left: 16px; padding-left: 8px; border-left: 2px solid #e2e8f0; }
+      .section-head { display: flex; justify-content: space-between; align-items: center; margin: 14px 0 8px; }
+      .section-head h2 { font-size: 14px; font-weight: 700; color: #0f172a; }
+      .part-row { display: grid; grid-template-columns: 1fr 1fr 60px 90px 24px; gap: 6px; align-items: center; margin-bottom: 4px; }
+      .part-row select, .part-row input { padding: 5px 6px; border: 1px solid #cbd5e1; border-radius: 3px; font-family: "JetBrains Mono", monospace; font-size: 11px; }
     </style>
   </head>
   <body>
@@ -1241,8 +1255,97 @@
 
       function layoutErd() { return {}; }
 
+      const ATTR_KIND_OPTIONS = [
+        { v: 'simple',      label: 'Simple' },
+        { v: 'key',         label: 'Key (underlined)' },
+        { v: 'partial-key', label: 'Partial key (dashed underline)' },
+        { v: 'composite',   label: 'Composite' },
+        { v: 'multivalued', label: 'Multivalued' },
+        { v: 'derived',     label: 'Derived' },
+      ];
+      // Sub-attributes can be anything except Composite (no infinite nesting — spec section "Composite attributes").
+      const SUB_ATTR_KIND_OPTIONS = ATTR_KIND_OPTIONS.filter((o) => o.v !== 'composite');
+      // Relationship attributes can't be keys (no key attributes on relationships in ER notation).
+      const REL_ATTR_KIND_OPTIONS = ATTR_KIND_OPTIONS.filter((o) => o.v === 'simple' || o.v === 'multivalued' || o.v === 'derived');
+
       function renderErdBuilder() {
-        document.getElementById('builder').innerHTML = '<p style="color:#64748b;font-size:13px">ERD mode coming online…</p>';
+        const root = document.getElementById('builder');
+        const entHtml = `
+          <div class="section-head">
+            <h2>Entities</h2>
+            <button class="btn" id="add-entity" type="button">+ Add Entity</button>
+          </div>
+          ${state.erd.entities.length === 0
+            ? `<p style="color:#64748b;font-size:13px">No entities yet. Click "Add Entity" to start.</p>`
+            : state.erd.entities.map(renderEntityCard).join('')}
+          <div class="section-head">
+            <h2>Relationships</h2>
+            <button class="btn" id="add-relationship" type="button" ${state.erd.entities.length < 1 ? 'disabled title="Add an entity first"' : ''}>+ Add Relationship</button>
+          </div>
+          ${state.erd.relationships.length === 0
+            ? `<p style="color:#64748b;font-size:13px">No relationships yet.</p>`
+            : state.erd.relationships.map(renderRelationshipCard).join('')}
+        `;
+        root.innerHTML = entHtml;
+        wireErdBuilderEvents();
+      }
+
+      function renderEntityCard(e) {
+        return `
+          <div class="e-card" data-eid="${e.id}">
+            <div class="e-head">
+              <input class="e-name" data-action="ent-name" value="${escapeAttr(e.name)}" />
+              <div class="kind-toggle" data-action="ent-kind">
+                <button type="button" data-kind="strong" class="${e.kind === 'strong' ? 'active' : ''}">Strong</button>
+                <button type="button" data-kind="weak" class="${e.kind === 'weak' ? 'active' : ''}">Weak</button>
+              </div>
+              <button class="icon-btn" data-action="delete-entity" title="Delete entity">×</button>
+            </div>
+            <div class="attr-list" data-attr-host="entity">
+              ${(e.attributes || []).map((a) => renderAttrRow(a, 'entity', false)).join('')}
+            </div>
+            <div style="margin-top:6px"><button class="btn ghost" type="button" data-action="add-entity-attr">+ Add Attribute</button></div>
+          </div>
+        `;
+      }
+
+      function renderAttrRow(a, ownerKind, isSubAttr) {
+        const opts = isSubAttr
+          ? SUB_ATTR_KIND_OPTIONS
+          : ownerKind === 'relationship'
+            ? REL_ATTR_KIND_OPTIONS
+            : ATTR_KIND_OPTIONS;
+        const optsHtml = opts.map((o) => `<option value="${o.v}" ${o.v === a.kind ? 'selected' : ''}>${o.label}</option>`).join('');
+        const childrenHtml = (a.kind === 'composite')
+          ? `<div class="attr-children" data-attr-host="composite" data-parent-aid="${a.id}">
+               ${(a.children || []).map((c) => renderAttrRow(c, 'entity', true)).join('')}
+               <div><button class="btn ghost" type="button" data-action="add-sub-attr">+ Sub-attribute</button></div>
+             </div>`
+          : '';
+        return `
+          <div class="attr-row" data-aid="${a.id}">
+            <input data-action="attr-name" value="${escapeAttr(a.name)}" placeholder="attribute" />
+            <select data-action="attr-kind">${optsHtml}</select>
+            <button class="icon-btn" data-action="delete-attr" title="Delete attribute">×</button>
+          </div>
+          ${childrenHtml}
+        `;
+      }
+
+      // Relationship card is a stub for this task; Task 7 fills it in.
+      function renderRelationshipCard(r) {
+        return `<div class="R-card" data-rid="${r.id}"><div class="R-head"><strong>${escapeAttr(r.name)}</strong><span style="color:#94a3b8;font-size:11px">(relationship UI in next task)</span></div></div>`;
+      }
+
+      // Wiring stub — Task 8 fills this in.
+      function wireErdBuilderEvents() {
+        const addBtn = document.getElementById('add-entity');
+        if (addBtn) {
+          addBtn.addEventListener('click', () => {
+            state.erd.entities.push(makeEntity({ name: `ENTITY_${state.erd.entities.length + 1}`, attributes: [makeAttribute({ name: 'id', kind: 'key' })] }));
+            render();
+          });
+        }
       }
       function renderErdSvg() {
         const svg = document.getElementById('svg');
