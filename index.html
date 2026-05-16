@@ -1419,8 +1419,9 @@
             if (pts.length === 0) {
               positions[`relationship:${r.id}`] = { x: ENT_X0, y: ENT_Y0 - 200 };
             } else if (isUnary) {
-              // Unary self-relationship — offset to the left of the participant entity.
-              positions[`relationship:${r.id}`] = { x: pts[0].x - 200, y: pts[0].y };
+              // Unary self-relationship — offset to the left of the participant entity, clamped so the diamond stays fully visible.
+              const minX = ERD_DIMS.REL_W / 2 + 30;
+              positions[`relationship:${r.id}`] = { x: Math.max(minX, pts[0].x - 200), y: pts[0].y };
             } else {
               const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
               const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
