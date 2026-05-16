@@ -272,7 +272,11 @@
       let _idSeq = 0;
       const uid = (p) => `${p}${++_idSeq}`;
 
-      let state = { tables: [] };
+      let state = {
+        mode: 'schema',
+        schema: { tables: [] },
+        erd: { entities: [], relationships: [] },
+      };
 
       function makeColumn(overrides = {}) {
         return {
@@ -285,7 +289,7 @@
       }
 
       function makeTable(overrides = {}) {
-        const tableNumber = state.tables.length + 1;
+        const tableNumber = state.schema.tables.length + 1;
         return {
           id: uid('t'),
           name: `TABLE_${tableNumber}`,
@@ -309,18 +313,23 @@
 
       function addTable() {
         const newTable = makeTable();
-        state.tables.push(newTable);
+        state.schema.tables.push(newTable);
         render();
         const inp = document.querySelector(`.t-card[data-tid="${newTable.id}"] .t-name`);
         if (inp) { inp.focus(); inp.select(); inp.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
       }
 
       function render() {
-        renderBuilder();
-        renderSvg();
+        if (state.mode === 'schema') {
+          renderSchemaBuilder();
+          renderSchemaSvg();
+        } else {
+          renderErdBuilder();
+          renderErdSvg();
+        }
       }
 
-      function renderBuilder() {
+      function renderSchemaBuilder() {
         const root = document.getElementById('builder');
         const headerHtml = `
           <div class="builder-actions">
@@ -328,13 +337,13 @@
             <button class="btn" id="add-table" type="button">+ Add Table</button>
           </div>`;
 
-        if (state.tables.length === 0) {
+        if (state.schema.tables.length === 0) {
           root.innerHTML = headerHtml + `<p style="color:#64748b;font-size:13px">No tables yet. Click "Add Table" to start.</p>`;
           document.getElementById('add-table').addEventListener('click', addTable);
           return;
         }
 
-        const cardsHtml = state.tables.map((t) => `
+        const cardsHtml = state.schema.tables.map((t) => `
           <div class="t-card" data-tid="${t.id}">
             <div class="t-head">
               <input class="t-name" data-action="rename-table" value="${escapeAttr(t.name)}" />
@@ -384,7 +393,7 @@
 
       function renderRelationRow(table, r) {
         const fromColOpts = `<option value="">— from column —</option>` + table.columns.map((c) => `<option value="${c.id}" ${c.id === r.fromColumnId ? 'selected' : ''}>${escapeAttr(c.name)}</option>`).join('');
-        const otherTables = state.tables.filter((t) => t.id !== table.id);
+        const otherTables = state.schema.tables.filter((t) => t.id !== table.id);
         const toTableOpts = `<option value="">— to table —</option>` + otherTables.map((t) => `<option value="${t.id}" ${t.id === r.toTableId ? 'selected' : ''}>${escapeAttr(t.name)}</option>`).join('');
         const tgtTable = otherTables.find((t) => t.id === r.toTableId);
         const toColOpts = !tgtTable
@@ -427,8 +436,8 @@
           btn.addEventListener('click', (e) => {
             const tid = e.target.closest('.t-card').dataset.tid;
             if (confirm('Delete this table?')) {
-              state.tables = state.tables.filter((t) => t.id !== tid);
-              state.tables.forEach((t) => {
+              state.schema.tables = state.schema.tables.filter((t) => t.id !== tid);
+              state.schema.tables.forEach((t) => {
                 t.relations = (t.relations || []).filter((r) => r.toTableId !== tid);
               });
               render();
@@ -438,14 +447,14 @@
         document.querySelectorAll('[data-action="rename-table"]').forEach((inp) => {
           inp.addEventListener('input', (e) => {
             const tid = e.target.closest('.t-card').dataset.tid;
-            const t = state.tables.find((t) => t.id === tid);
-            if (t) { t.name = e.target.value; renderSvg(); }
+            const t = state.schema.tables.find((t) => t.id === tid);
+            if (t) { t.name = e.target.value; renderSchemaSvg(); }
           });
         });
         document.querySelectorAll('[data-action="add-column"]').forEach((btn) => {
           btn.addEventListener('click', (e) => {
             const tid = e.target.closest('.t-card').dataset.tid;
-            const t = state.tables.find((t) => t.id === tid);
+            const t = state.schema.tables.find((t) => t.id === tid);
             if (!t) return;
             const newCol = makeColumn({ name: '' });
             t.columns.push(newCol);
@@ -458,11 +467,11 @@
           btn.addEventListener('click', (e) => {
             const tid = e.target.closest('.t-card').dataset.tid;
             const cid = e.target.closest('.col-row').dataset.cid;
-            const t = state.tables.find((t) => t.id === tid);
+            const t = state.schema.tables.find((t) => t.id === tid);
             if (!t) return;
             t.columns = t.columns.filter((c) => c.id !== cid);
             t.relations = (t.relations || []).filter((r) => r.fromColumnId !== cid);
-            state.tables.forEach((other) => {
+            state.schema.tables.forEach((other) => {
               other.relations = (other.relations || []).filter((r) => !(r.toTableId === tid && r.toColumnId === cid));
             });
             render();
@@ -472,14 +481,14 @@
         const findCol = (el) => {
           const tid = el.closest('.t-card').dataset.tid;
           const cid = el.closest('.col-row').dataset.cid;
-          const t = state.tables.find((t) => t.id === tid);
+          const t = state.schema.tables.find((t) => t.id === tid);
           return { t, c: t && t.columns.find((c) => c.id === cid) };
         };
 
         document.querySelectorAll('[data-action="col-name"]').forEach((inp) => {
           inp.addEventListener('input', (e) => {
             const { c } = findCol(e.target);
-            if (c) { c.name = e.target.value; renderSvg(); }
+            if (c) { c.name = e.target.value; renderSchemaSvg(); }
           });
         });
         document.querySelectorAll('[data-action="col-base"]').forEach((sel) => {
@@ -497,7 +506,7 @@
             if (!c) return;
             const parsed = parseType(c.type);
             c.type = formatType(parsed.base, e.target.value);
-            renderSvg();
+            renderSchemaSvg();
           });
         });
         document.querySelectorAll('[data-action="col-constraint"]').forEach((sel) => {
@@ -505,21 +514,21 @@
             const { c } = findCol(e.target);
             if (!c) return;
             c.constraint = e.target.value;
-            renderSvg();
+            renderSchemaSvg();
           });
         });
 
         const findRel = (el) => {
           const tid = el.closest('.t-card').dataset.tid;
           const rid = el.closest('.rel-row').dataset.rid;
-          const t = state.tables.find((t) => t.id === tid);
+          const t = state.schema.tables.find((t) => t.id === tid);
           return { t, r: t && (t.relations || []).find((r) => r.id === rid) };
         };
 
         document.querySelectorAll('[data-action="add-relation"]').forEach((btn) => {
           btn.addEventListener('click', (e) => {
             const tid = e.target.closest('.t-card').dataset.tid;
-            const t = state.tables.find((t) => t.id === tid);
+            const t = state.schema.tables.find((t) => t.id === tid);
             if (!t) return;
             t.relations = t.relations || [];
             t.relations.push(makeRelation());
@@ -530,7 +539,7 @@
           btn.addEventListener('click', (e) => {
             const tid = e.target.closest('.t-card').dataset.tid;
             const rid = e.target.closest('.rel-row').dataset.rid;
-            const t = state.tables.find((t) => t.id === tid);
+            const t = state.schema.tables.find((t) => t.id === tid);
             if (!t) return;
             t.relations = (t.relations || []).filter((r) => r.id !== rid);
             render();
@@ -560,13 +569,13 @@
         document.querySelectorAll('[data-action="rel-card"]').forEach((sel) => {
           sel.addEventListener('change', (e) => {
             const { r } = findRel(e.target);
-            if (r) { r.cardinality = e.target.value; renderSvg(); }
+            if (r) { r.cardinality = e.target.value; renderSchemaSvg(); }
           });
         });
         document.querySelectorAll('[data-action="rel-label"]').forEach((inp) => {
           inp.addEventListener('input', (e) => {
             const { r } = findRel(e.target);
-            if (r) { r.label = e.target.value; renderSvg(); }
+            if (r) { r.label = e.target.value; renderSchemaSvg(); }
           });
         });
       }
@@ -601,7 +610,7 @@
         // Tables with custom x/y (set via drag) override their grid slot.
         const COLS = 2, GAP_X = 80, GAP_Y = 60, X0 = 40, Y0 = 40;
         const rows = [];
-        state.tables.forEach((t, i) => {
+        state.schema.tables.forEach((t, i) => {
           const col = i % COLS, row = Math.floor(i / COLS);
           rows[row] = rows[row] || [];
           rows[row][col] = t;
@@ -616,7 +625,7 @@
           });
           yCursor += rowMaxH + GAP_Y;
         });
-        state.tables.forEach((t) => {
+        state.schema.tables.forEach((t) => {
           if (typeof t.x === 'number' && typeof t.y === 'number') {
             positions[t.id] = { x: t.x, y: t.y };
           }
@@ -721,12 +730,12 @@
 
       function collectRelationships(positions) {
         const rels = [];
-        state.tables.forEach((srcTable) => {
+        state.schema.tables.forEach((srcTable) => {
           (srcTable.relations || []).forEach((rel) => {
             if (!rel.fromColumnId || !rel.toTableId || !rel.toColumnId) return;
             const srcCol = srcTable.columns.find((c) => c.id === rel.fromColumnId);
             if (!srcCol) return;
-            const tgtTable = state.tables.find((t) => t.id === rel.toTableId);
+            const tgtTable = state.schema.tables.find((t) => t.id === rel.toTableId);
             if (!tgtTable) return;
             const tgtCol = tgtTable.columns.find((c) => c.id === rel.toColumnId);
             if (!tgtCol) return;
@@ -808,11 +817,11 @@
         svg.appendChild(g);
       }
 
-      function renderSvg() {
+      function renderSchemaSvg() {
         const svg = document.getElementById('svg');
         while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-        if (state.tables.length === 0) {
+        if (state.schema.tables.length === 0) {
           svg.setAttribute('width', 800);
           svg.setAttribute('height', 200);
           svg.appendChild(txt(400, 100, 'Add a table to see your diagram here', {
@@ -830,11 +839,11 @@
         rels.forEach((r) => drawRelationship(svg, r, positions));
 
         // Then draw tables.
-        state.tables.forEach((t) => drawTable(svg, t, positions[t.id]));
+        state.schema.tables.forEach((t) => drawTable(svg, t, positions[t.id]));
 
         // Resize SVG to fit.
         let maxX = 0, maxY = 0;
-        state.tables.forEach((t) => {
+        state.schema.tables.forEach((t) => {
           const p = positions[t.id];
           maxX = Math.max(maxX, p.x + TW);
           maxY = Math.max(maxY, p.y + tableHeight(t));
@@ -885,7 +894,7 @@
       }
 
       async function downloadPng() {
-        if (state.tables.length === 0) { alert('Add at least one table first.'); return; }
+        if (state.schema.tables.length === 0) { alert('Add at least one table first.'); return; }
         const { canvas } = await svgToCanvas(2);
         canvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob);
@@ -895,7 +904,7 @@
       }
 
       async function downloadPdf() {
-        if (state.tables.length === 0) { alert('Add at least one table first.'); return; }
+        if (state.schema.tables.length === 0) { alert('Add at least one table first.'); return; }
         const { canvas, w, h } = await svgToCanvas(2);
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
@@ -908,7 +917,7 @@
       }
 
       function loadSample() {
-        if (state.tables.length > 0 && !confirm('Replace your current diagram with the sample?')) return;
+        if (state.schema.tables.length > 0 && !confirm('Replace your current diagram with the sample?')) return;
         _idSeq = 0;
 
         const departments = { id: uid('t'), name: 'DEPARTMENTS', relations: [], columns: [
@@ -930,20 +939,20 @@
           makeRelation({ fromColumnId: employeesCols[6].id, toTableId: departments.id, toColumnId: departments.columns[0].id, cardinality: 'N:1', label: 'belongs to' }),
         ]};
 
-        state = { tables: [departments, employees] };
+        state.schema = { tables: [departments, employees] };
         render();
       }
 
       document.getElementById('btn-sample').addEventListener('click', loadSample);
       document.getElementById('btn-reset').addEventListener('click', () => {
-        if (state.tables.length === 0 || confirm('Clear everything?')) {
-          state = { tables: [] };
+        if (state.schema.tables.length === 0 || confirm('Clear everything?')) {
+          state.schema = { tables: [] };
           render();
         }
       });
       document.getElementById('btn-reset-layout').addEventListener('click', () => {
-        state.tables.forEach((t) => { delete t.x; delete t.y; });
-        renderSvg();
+        state.schema.tables.forEach((t) => { delete t.x; delete t.y; });
+        renderSchemaSvg();
       });
       document.getElementById('btn-png').addEventListener('click', downloadPng);
       document.getElementById('btn-pdf').addEventListener('click', downloadPdf);
@@ -960,7 +969,7 @@
           const handle = e.target.closest('[data-table-drag]');
           if (!handle) return;
           const tid = handle.getAttribute('data-table-drag');
-          const t = state.tables.find((t) => t.id === tid);
+          const t = state.schema.tables.find((t) => t.id === tid);
           if (!t) return;
           const pos = layoutTables()[tid];
           const pt = toSvg(e);
@@ -971,12 +980,12 @@
         });
         document.addEventListener('pointermove', (e) => {
           if (!drag) return;
-          const t = state.tables.find((t) => t.id === drag.tid);
+          const t = state.schema.tables.find((t) => t.id === drag.tid);
           if (!t) return;
           const pt = toSvg(e);
           t.x = Math.max(0, pt.x - drag.offX);
           t.y = Math.max(0, pt.y - drag.offY);
-          renderSvg();
+          renderSchemaSvg();
         });
         const endDrag = (e) => {
           if (!drag) return;
@@ -987,6 +996,19 @@
         document.addEventListener('pointerup', endDrag);
         document.addEventListener('pointercancel', endDrag);
       })();
+
+      function renderErdBuilder() {
+        document.getElementById('builder').innerHTML = '<p style="color:#64748b;font-size:13px">ERD mode coming online…</p>';
+      }
+      function renderErdSvg() {
+        const svg = document.getElementById('svg');
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        svg.setAttribute('width', 800);
+        svg.setAttribute('height', 200);
+        const placeholder = mk('text', { x: 400, y: 100, 'text-anchor': 'middle', 'dominant-baseline': 'central', fill: '#94a3b8', 'font-family': "'Inter',sans-serif", 'font-size': 14 });
+        placeholder.textContent = 'ERD renderer not implemented yet';
+        svg.appendChild(placeholder);
+      }
 
       render();
     </script>
