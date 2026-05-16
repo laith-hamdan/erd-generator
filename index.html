@@ -922,11 +922,14 @@
         a.remove();
       }
 
-      async function downloadPng() {
-        const empty = state.mode === 'schema'
+      function isDiagramEmpty() {
+        return state.mode === 'schema'
           ? state.schema.tables.length === 0
-          : (state.erd.entities.length === 0 && state.erd.relationships.length === 0);
-        if (empty) { alert('Add something to the diagram first.'); return; }
+          : state.erd.entities.length === 0 && state.erd.relationships.length === 0;
+      }
+
+      async function downloadPng() {
+        if (isDiagramEmpty()) { alert('Add something to the diagram first.'); return; }
         const { canvas } = await svgToCanvas(2);
         canvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob);
@@ -936,10 +939,7 @@
       }
 
       async function downloadPdf() {
-        const empty = state.mode === 'schema'
-          ? state.schema.tables.length === 0
-          : (state.erd.entities.length === 0 && state.erd.relationships.length === 0);
-        if (empty) { alert('Add something to the diagram first.'); return; }
+        if (isDiagramEmpty()) { alert('Add something to the diagram first.'); return; }
         const { canvas, w, h } = await svgToCanvas(2);
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
