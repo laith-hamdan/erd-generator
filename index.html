@@ -47,6 +47,33 @@
         justify-content: center;
         margin-top: 6px;
       }
+      .mode-switch {
+        display: inline-flex;
+        background: #e2e8f0;
+        border-radius: 999px;
+        padding: 3px;
+        gap: 2px;
+        margin-top: 8px;
+      }
+      .mode-switch button {
+        background: transparent;
+        border: 0;
+        padding: 6px 18px;
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+        border-radius: 999px;
+        cursor: pointer;
+        letter-spacing: 0.3px;
+      }
+      .mode-switch button.active {
+        background: #1e3a5f;
+        color: #ffffff;
+      }
+      @media (max-width: 600px) {
+        .mode-switch button { padding: 5px 14px; font-size: 11px; }
+      }
       .btn {
         appearance: none;
         border: 1px solid #1e3a5f;
@@ -218,6 +245,10 @@
         <span>Schema Generator</span>
       </h1>
       <p class="sub">Design your database schema and export it</p>
+      <div class="mode-switch" role="tablist" aria-label="Diagram mode">
+        <button type="button" id="mode-schema" class="active" role="tab" aria-selected="true">Schema</button>
+        <button type="button" id="mode-erd" role="tab" aria-selected="false">ERD</button>
+      </div>
       <div class="actions">
         <button class="btn ghost" id="btn-sample" type="button">Load Sample</button>
         <button class="btn ghost" id="btn-reset-layout" type="button" title="Re-arrange tables in default grid">Reset Layout</button>
@@ -956,6 +987,18 @@
       });
       document.getElementById('btn-png').addEventListener('click', downloadPng);
       document.getElementById('btn-pdf').addEventListener('click', downloadPdf);
+
+      function setMode(newMode) {
+        if (state.mode === newMode) return;
+        state.mode = newMode;
+        document.getElementById('mode-schema').classList.toggle('active', newMode === 'schema');
+        document.getElementById('mode-schema').setAttribute('aria-selected', String(newMode === 'schema'));
+        document.getElementById('mode-erd').classList.toggle('active', newMode === 'erd');
+        document.getElementById('mode-erd').setAttribute('aria-selected', String(newMode === 'erd'));
+        render();
+      }
+      document.getElementById('mode-schema').addEventListener('click', () => setMode('schema'));
+      document.getElementById('mode-erd').addEventListener('click', () => setMode('erd'));
 
       // Drag tables via Pointer Events so mouse, touch, and stylus all work.
       (function wireDrag() {
