@@ -1869,12 +1869,12 @@
               entryX = epos.x - ERD_DIMS.ENT_W / 2;       // on the left edge of the entity rectangle
               entryY = epos.y + off * (ERD_DIMS.ENT_H / 4); // upper-third / lower-third of the entity height
             }
-            drawParticipantConnector(svg, rpos, { x: entryX, y: entryY }, p, isSelf);
+            drawParticipantConnector(svg, rpos, { x: entryX, y: entryY }, p, isSelf, idx);
           });
         });
       }
 
-      function drawParticipantConnector(svg, rpos, epos, part, isSelf) {
+      function drawParticipantConnector(svg, rpos, epos, part, isSelf, idx) {
         const doubled = part.participation === 'total';
         drawErdConnector(svg, rpos.x, rpos.y, epos.x, epos.y, doubled);
         // Cardinality label near the diamond.
@@ -1884,7 +1884,11 @@
         // Offset label perpendicular to the line so it doesn't sit on the line.
         const dx = epos.x - rpos.x, dy = epos.y - rpos.y;
         const len = Math.max(1, Math.hypot(dx, dy));
-        const ox = -dy / len * 10, oy = dx / len * 10;
+        let ox = -dy / len * 12, oy = dx / len * 12;
+        // For self-relationships, the two connectors run nearly parallel, so their natural
+        // perpendicular offsets point in the same direction and the labels overlap. Flip the
+        // offset for the first participant so the two participants' labels sit on opposite sides.
+        if (isSelf && idx === 0) { ox = -ox; oy = -oy; }
         svg.appendChild(txt(cx + ox, cy + oy, part.cardinality, {
           'text-anchor': 'middle', 'dominant-baseline': 'central',
           fill: ERD_C.LABEL, 'font-family': "'Inter',sans-serif", 'font-size': 12, 'font-weight': 700,
