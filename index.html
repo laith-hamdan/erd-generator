@@ -3,14 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Schema Generator</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='3' width='11' height='11' rx='1.5' fill='%23fef9c3' stroke='%231e3a5f' stroke-width='2'/%3E%3Crect x='19' y='18' width='11' height='11' rx='1.5' fill='%23dbeafe' stroke='%231e3a5f' stroke-width='2'/%3E%3Cpath d='M13 8.5 L16 8.5 L16 23.5 L19 23.5' stroke='%236366f1' stroke-width='2' fill='none'/%3E%3C/svg%3E" />
+    <title>ERD + Schema Generator</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='3' width='11' height='11' rx='1.5' fill='%23fef9c3' stroke='%231e3a5f' stroke-width='2'/%3E%3Crect x='19' y='18' width='11' height='11' rx='1.5' fill='%23dbeafe' stroke='%231e3a5f' stroke-width='2'/%3E%3Cpath d='M13 8.5 L16 8.5 L16 23.5 L19 23.5' stroke='%236366f1' stroke-width='2' fill='none'/%3E%3C/svg%3E"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
       body {
         background: #edf0f7;
         font-family: "Inter", system-ui, sans-serif;
@@ -35,7 +43,11 @@
         align-items: center;
         gap: 10px;
       }
-      .schema-icon { width: 28px; height: 28px; flex-shrink: 0; }
+      .schema-icon {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+      }
       .sub {
         font-size: 12px;
         color: #64748b;
@@ -83,17 +95,42 @@
         padding: 8px 16px;
         border-radius: 8px;
         cursor: pointer;
-        transition: transform .08s ease, background .15s ease, box-shadow .15s ease;
-        box-shadow: 0 1px 3px rgba(0,0,0,.12);
+        transition:
+          transform 0.08s ease,
+          background 0.15s ease,
+          box-shadow 0.15s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
       }
-      .btn:hover { background: #274d7a; }
-      .btn:active { transform: translateY(1px); }
-      .btn.secondary { background: #fff; color: #1e3a5f; }
-      .btn.secondary:hover { background: #f1f5f9; }
-      .btn.ghost { background: transparent; color: #1e3a5f; border-color: #cbd5e1; box-shadow: none; }
-      .btn.ghost:hover { background: #f1f5f9; }
-      .btn.danger { border-color: #b91c1c; background: #fff; color: #b91c1c; }
-      .btn.danger:hover { background: #fef2f2; }
+      .btn:hover {
+        background: #274d7a;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn.secondary {
+        background: #fff;
+        color: #1e3a5f;
+      }
+      .btn.secondary:hover {
+        background: #f1f5f9;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: #1e3a5f;
+        border-color: #cbd5e1;
+        box-shadow: none;
+      }
+      .btn.ghost:hover {
+        background: #f1f5f9;
+      }
+      .btn.danger {
+        border-color: #b91c1c;
+        background: #fff;
+        color: #b91c1c;
+      }
+      .btn.danger:hover {
+        background: #fef2f2;
+      }
 
       main.layout {
         display: grid;
@@ -105,26 +142,67 @@
         margin: 0 auto;
       }
       @media (max-width: 900px) {
-        main.layout { grid-template-columns: 1fr; }
+        main.layout {
+          grid-template-columns: 1fr;
+        }
       }
       @media (max-width: 600px) {
-        body { padding: 16px 12px 56px; gap: 12px; }
-        h1 { font-size: 18px; gap: 8px; }
-        .schema-icon { width: 22px; height: 22px; }
-        .sub { font-size: 11px; }
-        .btn { padding: 7px 12px; font-size: 11px; }
-        .actions { gap: 6px; }
-        .mode-switch button { padding: 5px 14px; font-size: 11px; }
-        .card { padding: 12px; }
-        .t-card, .e-card, .R-card { padding: 10px; margin-bottom: 10px; }
-        footer.page { padding: 8px 0; }
+        body {
+          padding: 16px 12px 56px;
+          gap: 12px;
+        }
+        h1 {
+          font-size: 18px;
+          gap: 8px;
+        }
+        .schema-icon {
+          width: 22px;
+          height: 22px;
+        }
+        .sub {
+          font-size: 11px;
+        }
+        .btn {
+          padding: 7px 12px;
+          font-size: 11px;
+        }
+        .actions {
+          gap: 6px;
+        }
+        .mode-switch button {
+          padding: 5px 14px;
+          font-size: 11px;
+        }
+        .card {
+          padding: 12px;
+        }
+        .t-card,
+        .e-card,
+        .R-card {
+          padding: 10px;
+          margin-bottom: 10px;
+        }
+        footer.page {
+          padding: 8px 0;
+        }
 
         /* Card head rows wrap so the kind toggle drops below a long name */
-        .t-head, .e-head, .R-head { flex-wrap: wrap; gap: 6px; }
-        .t-name, .e-name, .R-name { flex: 1 1 100%; min-width: 0; }
+        .t-head,
+        .e-head,
+        .R-head {
+          flex-wrap: wrap;
+          gap: 6px;
+        }
+        .t-name,
+        .e-name,
+        .R-name {
+          flex: 1 1 100%;
+          min-width: 0;
+        }
 
         /* Schema column row: name on its own line, type+constraint stacked below, delete pinned top-right */
-        .col-row, .col-row.has-fk {
+        .col-row,
+        .col-row.has-fk {
           grid-template-columns: minmax(0, 1fr) 28px;
           grid-template-areas:
             "name del"
@@ -132,10 +210,18 @@
             "constraint constraint";
           row-gap: 4px;
         }
-        .col-row > input[data-action="col-name"] { grid-area: name; }
-        .col-row > .col-type-wrap { grid-area: type; }
-        .col-row > select[data-action="col-constraint"] { grid-area: constraint; }
-        .col-row > button[data-action="delete-column"] { grid-area: del; }
+        .col-row > input[data-action="col-name"] {
+          grid-area: name;
+        }
+        .col-row > .col-type-wrap {
+          grid-area: type;
+        }
+        .col-row > select[data-action="col-constraint"] {
+          grid-area: constraint;
+        }
+        .col-row > button[data-action="delete-column"] {
+          grid-area: del;
+        }
 
         /* ERD attribute row: name + delete top, kind dropdown full-width below */
         .attr-row {
@@ -145,9 +231,15 @@
             "kind kind";
           row-gap: 4px;
         }
-        .attr-row > input[data-action="attr-name"] { grid-area: name; }
-        .attr-row > select[data-action="attr-kind"] { grid-area: kind; }
-        .attr-row > button[data-action="delete-attr"] { grid-area: del; }
+        .attr-row > input[data-action="attr-name"] {
+          grid-area: name;
+        }
+        .attr-row > select[data-action="attr-kind"] {
+          grid-area: kind;
+        }
+        .attr-row > button[data-action="delete-attr"] {
+          grid-area: del;
+        }
 
         /* ERD participant row: entity+delete top, role full-width middle, card+part bottom */
         .part-row {
@@ -159,27 +251,51 @@
           row-gap: 4px;
           margin-bottom: 8px;
         }
-        .part-row > select[data-action="part-entity"] { grid-area: entity; }
-        .part-row > input[data-action="part-role"] { grid-area: role; }
-        .part-row > select[data-action="part-card"] { grid-area: card; }
-        .part-row > select[data-action="part-part"] { grid-area: part; }
-        .part-row > button[data-action="delete-part"] { grid-area: del; }
+        .part-row > select[data-action="part-entity"] {
+          grid-area: entity;
+        }
+        .part-row > input[data-action="part-role"] {
+          grid-area: role;
+        }
+        .part-row > select[data-action="part-card"] {
+          grid-area: card;
+        }
+        .part-row > select[data-action="part-part"] {
+          grid-area: part;
+        }
+        .part-row > button[data-action="delete-part"] {
+          grid-area: del;
+        }
 
         /* Schema relationship grids: shrink-friendly */
-        .rel-row-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 28px; }
-        .rel-row-grid + .rel-row-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+        .rel-row-grid {
+          grid-template-columns:
+            minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)
+            28px;
+        }
+        .rel-row-grid + .rel-row-grid {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+        }
 
         /* Section heads slightly tighter */
-        .section-head h2, .builder-actions h2 { font-size: 13px; }
+        .section-head h2,
+        .builder-actions h2 {
+          font-size: 13px;
+        }
       }
       @media (min-width: 901px) {
-        body { height: 100vh; min-height: 100vh; overflow: hidden; }
+        body {
+          height: 100vh;
+          min-height: 100vh;
+          overflow: hidden;
+        }
         main.layout {
           flex: 1;
           min-height: 0;
           align-items: stretch;
         }
-        .card.builder, .card.preview {
+        .card.builder,
+        .card.preview {
           height: 100%;
           min-height: 0;
           overflow: auto;
@@ -188,11 +304,20 @@
       .card {
         background: #fff;
         border-radius: 14px;
-        box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 6px 24px rgba(0,0,0,.07);
+        box-shadow:
+          0 1px 4px rgba(0, 0, 0, 0.08),
+          0 6px 24px rgba(0, 0, 0, 0.07);
         padding: 18px;
       }
-      .card.preview { padding: 18px; overflow: auto; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
-      #svg { display: block; }
+      .card.preview {
+        padding: 18px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pan-y;
+      }
+      #svg {
+        display: block;
+      }
 
       footer.page {
         position: fixed;
@@ -217,147 +342,525 @@
         display: inline-flex;
         align-items: center;
         color: #64748b;
-        transition: color .15s ease;
+        transition: color 0.15s ease;
       }
-      footer.page a:hover { color: #0077B5; }
-      footer.page svg { width: 14px; height: 14px; display: block; }
-      .builder-actions { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-      .builder-actions h2 { font-size:13px; font-weight:600; color:#0f172a; letter-spacing:.3px; text-transform:uppercase; }
-      .t-card { border:1px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:12px; background:#fafbff; }
-      .t-head { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+      footer.page a:hover {
+        color: #0077b5;
+      }
+      footer.page svg {
+        width: 14px;
+        height: 14px;
+        display: block;
+      }
+      .builder-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .builder-actions h2 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #0f172a;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+      .t-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 12px;
+        background: #fafbff;
+      }
+      .t-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
       .t-name {
-        flex:1; font-family:"Inter",sans-serif; font-size:13px; font-weight:600;
-        padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; background:#fff; color:#0f172a;
+        flex: 1;
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 6px 8px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #fff;
+        color: #0f172a;
       }
-      .t-name:focus { outline:2px solid #6366f1; outline-offset:1px; border-color:#6366f1; }
-      .col-list { display:flex; flex-direction:column; gap:6px; }
+      .t-name:focus {
+        outline: 2px solid #6366f1;
+        outline-offset: 1px;
+        border-color: #6366f1;
+      }
+      .col-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
       .col-row {
-        display:grid; grid-template-columns: 0.9fr 1.7fr 1.1fr 28px; gap:6px; align-items:center;
+        display: grid;
+        grid-template-columns: 0.9fr 1.7fr 1.1fr 28px;
+        gap: 6px;
+        align-items: center;
       }
-      .col-row.has-fk { grid-template-columns: 0.9fr 1.7fr 1.1fr 28px; }
-      .col-row .fk-target { grid-column: 1 / -1; display:flex; gap:6px; }
-      .col-row input, .col-row select, .fk-target select {
-        font-family:"JetBrains Mono",monospace; font-size:11px; padding:5px 6px;
-        border:1px solid #cbd5e1; border-radius:5px; background:#fff; color:#0f172a; width:100%;
+      .col-row.has-fk {
+        grid-template-columns: 0.9fr 1.7fr 1.1fr 28px;
       }
-      .col-row input:focus, .col-row select:focus, .fk-target select:focus {
-        outline:2px solid #6366f1; outline-offset:1px; border-color:#6366f1;
+      .col-row .fk-target {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: 6px;
+      }
+      .col-row input,
+      .col-row select,
+      .fk-target select {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        padding: 5px 6px;
+        border: 1px solid #cbd5e1;
+        border-radius: 5px;
+        background: #fff;
+        color: #0f172a;
+        width: 100%;
+      }
+      .col-row input:focus,
+      .col-row select:focus,
+      .fk-target select:focus {
+        outline: 2px solid #6366f1;
+        outline-offset: 1px;
+        border-color: #6366f1;
       }
       .icon-btn {
-        width:28px; height:28px; border:1px solid #e2e8f0; background:#fff; color:#64748b;
-        border-radius:6px; cursor:pointer; font-size:14px; line-height:1; display:flex; align-items:center; justify-content:center;
+        width: 28px;
+        height: 28px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        color: #64748b;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .icon-btn:hover { background:#fee2e2; color:#b91c1c; border-color:#fecaca; }
-      .col-add { margin-top:8px; }
-      .col-add .btn { padding:6px 10px; font-size:11px; }
-      .col-type-wrap { display: flex; gap: 4px; min-width: 0; }
-      .col-type-wrap select { flex: 1; min-width: 0; }
-      .col-type-wrap input { width: 46px; flex-shrink: 0; }
-      .rel-section { margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e2e8f0; }
-      .rel-section h3 { font-size: 11px; font-weight: 600; color: #64748b; letter-spacing: .4px; text-transform: uppercase; margin-bottom: 8px; }
-      .rel-list { display: flex; flex-direction: column; gap: 8px; }
-      .rel-row { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
-      .rel-row-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 28px; gap: 6px; align-items: center; }
-      .rel-row-grid + .rel-row-grid { grid-template-columns: 1fr 2fr; }
-      .rel-row select, .rel-row input {
-        font-family: "JetBrains Mono", monospace; font-size: 11px; padding: 5px 6px;
-        border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; color: #0f172a; width: 100%;
+      .icon-btn:hover {
+        background: #fee2e2;
+        color: #b91c1c;
+        border-color: #fecaca;
       }
-      .rel-row select:focus, .rel-row input:focus {
-        outline: 2px solid #6366f1; outline-offset: 1px; border-color: #6366f1;
+      .col-add {
+        margin-top: 8px;
       }
-      .rel-add { margin-top: 8px; }
-      .rel-add .btn { padding: 6px 10px; font-size: 11px; }
+      .col-add .btn {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+      .col-type-wrap {
+        display: flex;
+        gap: 4px;
+        min-width: 0;
+      }
+      .col-type-wrap select {
+        flex: 1;
+        min-width: 0;
+      }
+      .col-type-wrap input {
+        width: 46px;
+        flex-shrink: 0;
+      }
+      .rel-section {
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px dashed #e2e8f0;
+      }
+      .rel-section h3 {
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .rel-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .rel-row {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .rel-row-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 28px;
+        gap: 6px;
+        align-items: center;
+      }
+      .rel-row-grid + .rel-row-grid {
+        grid-template-columns: 1fr 2fr;
+      }
+      .rel-row select,
+      .rel-row input {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        padding: 5px 6px;
+        border: 1px solid #cbd5e1;
+        border-radius: 5px;
+        background: #fff;
+        color: #0f172a;
+        width: 100%;
+      }
+      .rel-row select:focus,
+      .rel-row input:focus {
+        outline: 2px solid #6366f1;
+        outline-offset: 1px;
+        border-color: #6366f1;
+      }
+      .rel-add {
+        margin-top: 8px;
+      }
+      .rel-add .btn {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
       .rel-warn {
-        font-size: 11px; color: #92400e;
-        background: #fef3c7; border: 1px solid #fde68a;
-        padding: 6px 8px; border-radius: 5px; line-height: 1.4;
+        font-size: 11px;
+        color: #92400e;
+        background: #fef3c7;
+        border: 1px solid #fde68a;
+        padding: 6px 8px;
+        border-radius: 5px;
+        line-height: 1.4;
       }
-      .rel-warn strong { font-family: "JetBrains Mono", monospace; font-weight: 600; }
-      .e-card, .R-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 12px; background: #ffffff; }
-      .e-head, .R-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-      .e-name, .R-name { flex: 1; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 600; }
-      .kind-toggle { display: inline-flex; background: #f1f5f9; border-radius: 4px; padding: 2px; }
-      .kind-toggle button { background: transparent; border: 0; padding: 4px 10px; font-size: 11px; font-weight: 600; color: #475569; border-radius: 3px; cursor: pointer; }
-      .kind-toggle button.active { background: #1e3a5f; color: #ffffff; }
-      .attr-list { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
-      .attr-row { display: grid; grid-template-columns: 1fr 150px 24px; gap: 6px; align-items: center; }
-      .attr-row input, .attr-row select { padding: 5px 6px; border: 1px solid #cbd5e1; border-radius: 3px; font-family: "JetBrains Mono", monospace; font-size: 11px; }
-      .attr-children { margin-left: 16px; padding-left: 8px; border-left: 2px solid #e2e8f0; }
-      .section-head { display: flex; justify-content: space-between; align-items: center; margin: 14px 0 8px; }
-      .section-head h2 { font-size: 14px; font-weight: 700; color: #0f172a; }
-      .part-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 65px 100px 24px; gap: 5px; align-items: center; margin-bottom: 4px; }
-      .part-row select, .part-row input { padding: 5px 6px; border: 1px solid #cbd5e1; border-radius: 3px; font-family: "JetBrains Mono", monospace; font-size: 11px; min-width: 0; width: 100%; box-sizing: border-box; }
+      .rel-warn strong {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 600;
+      }
+      .e-card,
+      .R-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+        background: #ffffff;
+      }
+      .e-head,
+      .R-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .e-name,
+      .R-name {
+        flex: 1;
+        padding: 6px 8px;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .kind-toggle {
+        display: inline-flex;
+        background: #f1f5f9;
+        border-radius: 4px;
+        padding: 2px;
+      }
+      .kind-toggle button {
+        background: transparent;
+        border: 0;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #475569;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .kind-toggle button.active {
+        background: #1e3a5f;
+        color: #ffffff;
+      }
+      .attr-list {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-top: 4px;
+      }
+      .attr-row {
+        display: grid;
+        grid-template-columns: 1fr 150px 24px;
+        gap: 6px;
+        align-items: center;
+      }
+      .attr-row input,
+      .attr-row select {
+        padding: 5px 6px;
+        border: 1px solid #cbd5e1;
+        border-radius: 3px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+      }
+      .attr-children {
+        margin-left: 16px;
+        padding-left: 8px;
+        border-left: 2px solid #e2e8f0;
+      }
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 14px 0 8px;
+      }
+      .section-head h2 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .part-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 65px 100px 24px;
+        gap: 5px;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+      .part-row select,
+      .part-row input {
+        padding: 5px 6px;
+        border: 1px solid #cbd5e1;
+        border-radius: 3px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        min-width: 0;
+        width: 100%;
+        box-sizing: border-box;
+      }
     </style>
   </head>
   <body>
     <header class="page">
       <h1>
-        <svg class="schema-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="2" y="3" width="11" height="11" rx="1.5" fill="#fef9c3" stroke="#1e3a5f"/>
-          <line x1="2" y1="6.5" x2="13" y2="6.5" stroke="#1e3a5f"/>
-          <line x1="5" y1="9.5" x2="10" y2="9.5" stroke="#94a3b8" stroke-width="1.2"/>
-          <line x1="5" y1="11.7" x2="10" y2="11.7" stroke="#94a3b8" stroke-width="1.2"/>
-          <rect x="19" y="18" width="11" height="11" rx="1.5" fill="#dbeafe" stroke="#1e3a5f"/>
-          <line x1="19" y1="21.5" x2="30" y2="21.5" stroke="#1e3a5f"/>
-          <line x1="22" y1="24.5" x2="27" y2="24.5" stroke="#94a3b8" stroke-width="1.2"/>
-          <line x1="22" y1="26.7" x2="27" y2="26.7" stroke="#94a3b8" stroke-width="1.2"/>
-          <path d="M13 8.5 L16 8.5 L16 23.5 L19 23.5" stroke="#6366f1" stroke-width="1.6" fill="none"/>
-          <line x1="14.5" y1="6.5" x2="14.5" y2="10.5" stroke="#6366f1" stroke-width="1.6"/>
-          <line x1="17.5" y1="23.5" x2="19" y2="22" stroke="#6366f1" stroke-width="1.6"/>
-          <line x1="17.5" y1="23.5" x2="19" y2="25" stroke="#6366f1" stroke-width="1.6"/>
-          <line x1="17.5" y1="23.5" x2="19" y2="23.5" stroke="#6366f1" stroke-width="1.6"/>
+        <svg
+          class="schema-icon"
+          viewBox="0 0 32 32"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect
+            x="2"
+            y="3"
+            width="11"
+            height="11"
+            rx="1.5"
+            fill="#fef9c3"
+            stroke="#1e3a5f"
+          />
+          <line x1="2" y1="6.5" x2="13" y2="6.5" stroke="#1e3a5f" />
+          <line
+            x1="5"
+            y1="9.5"
+            x2="10"
+            y2="9.5"
+            stroke="#94a3b8"
+            stroke-width="1.2"
+          />
+          <line
+            x1="5"
+            y1="11.7"
+            x2="10"
+            y2="11.7"
+            stroke="#94a3b8"
+            stroke-width="1.2"
+          />
+          <rect
+            x="19"
+            y="18"
+            width="11"
+            height="11"
+            rx="1.5"
+            fill="#dbeafe"
+            stroke="#1e3a5f"
+          />
+          <line x1="19" y1="21.5" x2="30" y2="21.5" stroke="#1e3a5f" />
+          <line
+            x1="22"
+            y1="24.5"
+            x2="27"
+            y2="24.5"
+            stroke="#94a3b8"
+            stroke-width="1.2"
+          />
+          <line
+            x1="22"
+            y1="26.7"
+            x2="27"
+            y2="26.7"
+            stroke="#94a3b8"
+            stroke-width="1.2"
+          />
+          <path
+            d="M13 8.5 L16 8.5 L16 23.5 L19 23.5"
+            stroke="#6366f1"
+            stroke-width="1.6"
+            fill="none"
+          />
+          <line
+            x1="14.5"
+            y1="6.5"
+            x2="14.5"
+            y2="10.5"
+            stroke="#6366f1"
+            stroke-width="1.6"
+          />
+          <line
+            x1="17.5"
+            y1="23.5"
+            x2="19"
+            y2="22"
+            stroke="#6366f1"
+            stroke-width="1.6"
+          />
+          <line
+            x1="17.5"
+            y1="23.5"
+            x2="19"
+            y2="25"
+            stroke="#6366f1"
+            stroke-width="1.6"
+          />
+          <line
+            x1="17.5"
+            y1="23.5"
+            x2="19"
+            y2="23.5"
+            stroke="#6366f1"
+            stroke-width="1.6"
+          />
         </svg>
-        <span>Schema Generator</span>
+        <span>ERD + Schema Generator</span>
       </h1>
-      <p class="sub">Design your database schema and export it</p>
+      <p class="sub">Design your ER Diagram or database schema and export it</p>
       <div class="mode-switch" role="group" aria-label="Diagram mode">
-        <button type="button" id="mode-schema" aria-pressed="false">Schema</button>
-        <button type="button" id="mode-erd" class="active" aria-pressed="true">ERD</button>
+        <button type="button" id="mode-schema" aria-pressed="false">
+          Schema
+        </button>
+        <button type="button" id="mode-erd" class="active" aria-pressed="true">
+          ERD
+        </button>
       </div>
       <div class="actions">
-        <button class="btn ghost" id="btn-sample" type="button">Load Sample</button>
-        <button class="btn ghost" id="btn-reset-layout" type="button" title="Re-arrange to default layout">Reset Layout</button>
+        <button class="btn ghost" id="btn-sample" type="button">
+          Load Sample
+        </button>
+        <button
+          class="btn ghost"
+          id="btn-reset-layout"
+          type="button"
+          title="Re-arrange to default layout"
+        >
+          Reset Layout
+        </button>
         <button class="btn ghost" id="btn-reset" type="button">Reset</button>
         <button class="btn" id="btn-png" type="button">Download PNG</button>
-        <button class="btn secondary" id="btn-pdf" type="button">Download PDF</button>
+        <button class="btn secondary" id="btn-pdf" type="button">
+          Download PDF
+        </button>
       </div>
     </header>
 
     <main class="layout">
       <section class="card builder" id="builder"></section>
       <section class="card preview">
-        <svg id="svg" xmlns="http://www.w3.org/2000/svg" width="800" height="500"></svg>
+        <svg
+          id="svg"
+          xmlns="http://www.w3.org/2000/svg"
+          width="800"
+          height="500"
+        ></svg>
       </section>
     </main>
 
     <footer class="page">
       <span>Made by Laith Hamdan</span>
-      <a href="https://www.linkedin.com/in/laith-hamdan-89b142202/" target="_blank" rel="noopener" aria-label="LinkedIn profile of Laith Hamdan" title="LinkedIn">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+      <a
+        href="https://www.linkedin.com/in/laith-hamdan-89b142202/"
+        target="_blank"
+        rel="noopener"
+        aria-label="LinkedIn profile of Laith Hamdan"
+        title="LinkedIn"
+      >
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path
+            d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"
+          />
+        </svg>
       </a>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-      const TYPES = ['NUMBER(5)', 'NUMBER(3)', 'NUMBER(4)', 'VARCHAR(50)', 'VARCHAR(100)', 'VARCHAR(150)', 'VARCHAR(255)', 'VARCHAR(20)', 'DATE', 'BOOLEAN'];
-      const CONSTRAINTS = [
-        { v: '',   label: 'None' },
-        { v: 'PK', label: 'PK — Primary Key' },
-        { v: 'FK', label: 'FK — Foreign Key' },
-        { v: 'UQ', label: 'UQ — Unique' },
+      const TYPES = [
+        "NUMBER(5)",
+        "NUMBER(3)",
+        "NUMBER(4)",
+        "VARCHAR(50)",
+        "VARCHAR(100)",
+        "VARCHAR(150)",
+        "VARCHAR(255)",
+        "VARCHAR(20)",
+        "DATE",
+        "BOOLEAN",
       ];
-      const BASE_TYPES = ['NUMBER', 'VARCHAR2', 'VARCHAR', 'CHAR', 'DATE', 'TIMESTAMP', 'BOOLEAN', 'FLOAT', 'DECIMAL', 'TEXT', 'INT', 'BIGINT'];
-      const PARAM_TYPES = new Set(['NUMBER', 'VARCHAR2', 'VARCHAR', 'CHAR', 'DECIMAL']);
+      const CONSTRAINTS = [
+        { v: "", label: "None" },
+        { v: "PK", label: "PK — Primary Key" },
+        { v: "FK", label: "FK — Foreign Key" },
+        { v: "UQ", label: "UQ — Unique" },
+      ];
+      const BASE_TYPES = [
+        "NUMBER",
+        "VARCHAR2",
+        "VARCHAR",
+        "CHAR",
+        "DATE",
+        "TIMESTAMP",
+        "BOOLEAN",
+        "FLOAT",
+        "DECIMAL",
+        "TEXT",
+        "INT",
+        "BIGINT",
+      ];
+      const PARAM_TYPES = new Set([
+        "NUMBER",
+        "VARCHAR2",
+        "VARCHAR",
+        "CHAR",
+        "DECIMAL",
+      ]);
 
       function parseType(t) {
-        const m = String(t || '').match(/^\s*([A-Z][A-Z0-9_]*)\s*(?:\(([^)]*)\))?\s*$/i);
-        if (!m) return { base: 'NUMBER', size: '' };
-        return { base: m[1].toUpperCase(), size: m[2] || '' };
+        const m = String(t || "").match(
+          /^\s*([A-Z][A-Z0-9_]*)\s*(?:\(([^)]*)\))?\s*$/i,
+        );
+        if (!m) return { base: "NUMBER", size: "" };
+        return { base: m[1].toUpperCase(), size: m[2] || "" };
       }
 
       function formatType(base, size) {
-        const b = (base || 'NUMBER').toUpperCase();
+        const b = (base || "NUMBER").toUpperCase();
         if (PARAM_TYPES.has(b) && size) return `${b}(${size})`;
         return b;
       }
@@ -370,17 +873,17 @@
       const uid = (p) => `${p}${++_idSeq}`;
 
       let state = {
-        mode: 'erd',
+        mode: "erd",
         schema: { tables: [] },
         erd: { entities: [], relationships: [] },
       };
 
       function makeColumn(overrides = {}) {
         return {
-          id: uid('c'),
-          name: 'column_name',
-          type: 'NUMBER(5)',
-          constraint: '',
+          id: uid("c"),
+          name: "column_name",
+          type: "NUMBER(5)",
+          constraint: "",
           ...overrides,
         };
       }
@@ -388,9 +891,11 @@
       function makeTable(overrides = {}) {
         const tableNumber = state.schema.tables.length + 1;
         return {
-          id: uid('t'),
+          id: uid("t"),
           name: `TABLE_${tableNumber}`,
-          columns: [makeColumn({ name: 'id', type: 'NUMBER(5)', constraint: 'PK' })],
+          columns: [
+            makeColumn({ name: "id", type: "NUMBER(5)", constraint: "PK" }),
+          ],
           relations: [],
           ...overrides,
         };
@@ -398,12 +903,12 @@
 
       function makeRelation(overrides = {}) {
         return {
-          id: uid('r'),
-          fromColumnId: '',
-          toTableId: '',
-          toColumnId: '',
-          cardinality: '1:N',
-          label: '',
+          id: uid("r"),
+          fromColumnId: "",
+          toTableId: "",
+          toColumnId: "",
+          cardinality: "1:N",
+          label: "",
           ...overrides,
         };
       }
@@ -412,12 +917,18 @@
         const newTable = makeTable();
         state.schema.tables.push(newTable);
         render();
-        const inp = document.querySelector(`.t-card[data-tid="${newTable.id}"] .t-name`);
-        if (inp) { inp.focus(); inp.select(); inp.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+        const inp = document.querySelector(
+          `.t-card[data-tid="${newTable.id}"] .t-name`,
+        );
+        if (inp) {
+          inp.focus();
+          inp.select();
+          inp.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
       }
 
       function render() {
-        if (state.mode === 'schema') {
+        if (state.mode === "schema") {
           renderSchemaBuilder();
           renderSchemaSvg();
         } else {
@@ -427,7 +938,7 @@
       }
 
       function renderSchemaBuilder() {
-        const root = document.getElementById('builder');
+        const root = document.getElementById("builder");
         const headerHtml = `
           <div class="builder-actions">
             <h2>Tables</h2>
@@ -435,19 +946,25 @@
           </div>`;
 
         if (state.schema.tables.length === 0) {
-          root.innerHTML = headerHtml + `<p style="color:#64748b;font-size:13px">No tables yet. Click "Add Table" to start.</p>`;
-          document.getElementById('add-table').addEventListener('click', addTable);
+          root.innerHTML =
+            headerHtml +
+            `<p style="color:#64748b;font-size:13px">No tables yet. Click "Add Table" to start.</p>`;
+          document
+            .getElementById("add-table")
+            .addEventListener("click", addTable);
           return;
         }
 
-        const cardsHtml = state.schema.tables.map((t) => `
+        const cardsHtml = state.schema.tables
+          .map(
+            (t) => `
           <div class="t-card" data-tid="${t.id}">
             <div class="t-head">
               <input class="t-name" data-action="rename-table" value="${escapeAttr(t.name)}" />
               <button class="icon-btn" data-action="delete-table" title="Delete table">×</button>
             </div>
             <div class="col-list">
-              ${t.columns.map((c) => renderColumnRow(t, c)).join('')}
+              ${t.columns.map((c) => renderColumnRow(t, c)).join("")}
             </div>
             <div class="col-add">
               <button class="btn ghost" data-action="add-column" type="button">+ Add Column</button>
@@ -455,33 +972,46 @@
             <div class="rel-section">
               <h3>Relations</h3>
               <div class="rel-list">
-                ${(t.relations || []).map((r) => renderRelationRow(t, r)).join('')}
+                ${(t.relations || []).map((r) => renderRelationRow(t, r)).join("")}
               </div>
               <div class="rel-add">
                 <button class="btn ghost" data-action="add-relation" type="button">+ Add Relation</button>
               </div>
             </div>
           </div>
-        `).join('');
+        `,
+          )
+          .join("");
 
         root.innerHTML = headerHtml + cardsHtml;
 
-        document.getElementById('add-table').addEventListener('click', addTable);
+        document
+          .getElementById("add-table")
+          .addEventListener("click", addTable);
         wireBuilderEvents();
       }
 
       function renderColumnRow(table, col) {
-        const constraintOptions = CONSTRAINTS.map((c) => `<option value="${c.v}" ${c.v === col.constraint ? 'selected' : ''}>${c.label}</option>`).join('');
+        const constraintOptions = CONSTRAINTS.map(
+          (c) =>
+            `<option value="${c.v}" ${c.v === col.constraint ? "selected" : ""}>${c.label}</option>`,
+        ).join("");
         const parsed = parseType(col.type);
-        const baseOptions = BASE_TYPES.map((b) => `<option value="${b}" ${b === parsed.base ? 'selected' : ''}>${b}</option>`).join('')
-          + (BASE_TYPES.includes(parsed.base) ? '' : `<option value="${escapeAttr(parsed.base)}" selected>${escapeAttr(parsed.base)}</option>`);
+        const baseOptions =
+          BASE_TYPES.map(
+            (b) =>
+              `<option value="${b}" ${b === parsed.base ? "selected" : ""}>${b}</option>`,
+          ).join("") +
+          (BASE_TYPES.includes(parsed.base)
+            ? ""
+            : `<option value="${escapeAttr(parsed.base)}" selected>${escapeAttr(parsed.base)}</option>`);
         const showSize = PARAM_TYPES.has(parsed.base);
 
         return `<div class="col-row" data-cid="${col.id}">
           <input data-action="col-name" value="${escapeAttr(col.name)}" placeholder="column_name" />
           <div class="col-type-wrap">
             <select data-action="col-base">${baseOptions}</select>
-            ${showSize ? `<input data-action="col-size" value="${escapeAttr(parsed.size)}" placeholder="size" />` : ''}
+            ${showSize ? `<input data-action="col-size" value="${escapeAttr(parsed.size)}" placeholder="size" />` : ""}
           </div>
           <select data-action="col-constraint">${constraintOptions}</select>
           <button class="icon-btn" data-action="delete-column" title="Delete column">×</button>
@@ -489,25 +1019,54 @@
       }
 
       function renderRelationRow(table, r) {
-        const fromColOpts = `<option value="">— from column —</option>` + table.columns.map((c) => `<option value="${c.id}" ${c.id === r.fromColumnId ? 'selected' : ''}>${escapeAttr(c.name)}</option>`).join('');
-        const otherTables = state.schema.tables.filter((t) => t.id !== table.id);
-        const toTableOpts = `<option value="">— to table —</option>` + otherTables.map((t) => `<option value="${t.id}" ${t.id === r.toTableId ? 'selected' : ''}>${escapeAttr(t.name)}</option>`).join('');
+        const fromColOpts =
+          `<option value="">— from column —</option>` +
+          table.columns
+            .map(
+              (c) =>
+                `<option value="${c.id}" ${c.id === r.fromColumnId ? "selected" : ""}>${escapeAttr(c.name)}</option>`,
+            )
+            .join("");
+        const otherTables = state.schema.tables.filter(
+          (t) => t.id !== table.id,
+        );
+        const toTableOpts =
+          `<option value="">— to table —</option>` +
+          otherTables
+            .map(
+              (t) =>
+                `<option value="${t.id}" ${t.id === r.toTableId ? "selected" : ""}>${escapeAttr(t.name)}</option>`,
+            )
+            .join("");
         const tgtTable = otherTables.find((t) => t.id === r.toTableId);
         const toColOpts = !tgtTable
           ? `<option value="">— to column —</option>`
-          : `<option value="">— to column —</option>` + tgtTable.columns.map((c) => `<option value="${c.id}" ${c.id === r.toColumnId ? 'selected' : ''}>${escapeAttr(c.name)}</option>`).join('');
+          : `<option value="">— to column —</option>` +
+            tgtTable.columns
+              .map(
+                (c) =>
+                  `<option value="${c.id}" ${c.id === r.toColumnId ? "selected" : ""}>${escapeAttr(c.name)}</option>`,
+              )
+              .join("");
         const cardOpts = [
-          { v: '1:N', label: 'One → Many (1:N)' },
-          { v: 'N:1', label: 'Many → One (N:1)' },
-          { v: '1:1', label: 'One → One (1:1)' },
-          { v: 'N:N', label: 'Many → Many (N:N)' },
-        ].map((c) => `<option value="${c.v}" ${c.v === r.cardinality ? 'selected' : ''}>${c.label}</option>`).join('');
+          { v: "1:N", label: "One → Many (1:N)" },
+          { v: "N:1", label: "Many → One (N:1)" },
+          { v: "1:1", label: "One → One (1:1)" },
+          { v: "N:N", label: "Many → Many (N:N)" },
+        ]
+          .map(
+            (c) =>
+              `<option value="${c.v}" ${c.v === r.cardinality ? "selected" : ""}>${c.label}</option>`,
+          )
+          .join("");
 
         const fromCol = table.columns.find((c) => c.id === r.fromColumnId);
-        const toCol = tgtTable && tgtTable.columns.find((c) => c.id === r.toColumnId);
-        const warnHtml = (fromCol && toCol && !typesMatch(fromCol.type, toCol.type))
-          ? `<div class="rel-warn" role="status">⚠ Type mismatch: <strong>${escapeAttr(fromCol.type)}</strong> vs <strong>${escapeAttr(toCol.type)}</strong>. Foreign keys usually require matching column types.</div>`
-          : '';
+        const toCol =
+          tgtTable && tgtTable.columns.find((c) => c.id === r.toColumnId);
+        const warnHtml =
+          fromCol && toCol && !typesMatch(fromCol.type, toCol.type)
+            ? `<div class="rel-warn" role="status">⚠ Type mismatch: <strong>${escapeAttr(fromCol.type)}</strong> vs <strong>${escapeAttr(toCol.type)}</strong>. Foreign keys usually require matching column types.</div>`
+            : "";
 
         return `<div class="rel-row" data-rid="${r.id}">
           <div class="rel-row-grid">
@@ -525,71 +1084,99 @@
       }
 
       function escapeAttr(s) {
-        return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
       }
 
       function wireBuilderEvents() {
-        document.querySelectorAll('[data-action="delete-table"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const tid = e.target.closest('.t-card').dataset.tid;
-            if (confirm('Delete this table?')) {
-              state.schema.tables = state.schema.tables.filter((t) => t.id !== tid);
-              state.schema.tables.forEach((t) => {
-                t.relations = (t.relations || []).filter((r) => r.toTableId !== tid);
+        document
+          .querySelectorAll('[data-action="delete-table"]')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const tid = e.target.closest(".t-card").dataset.tid;
+              if (confirm("Delete this table?")) {
+                state.schema.tables = state.schema.tables.filter(
+                  (t) => t.id !== tid,
+                );
+                state.schema.tables.forEach((t) => {
+                  t.relations = (t.relations || []).filter(
+                    (r) => r.toTableId !== tid,
+                  );
+                });
+                render();
+              }
+            });
+          });
+        document
+          .querySelectorAll('[data-action="rename-table"]')
+          .forEach((inp) => {
+            inp.addEventListener("input", (e) => {
+              const tid = e.target.closest(".t-card").dataset.tid;
+              const t = state.schema.tables.find((t) => t.id === tid);
+              if (t) {
+                t.name = e.target.value;
+                renderSchemaSvg();
+              }
+            });
+          });
+        document
+          .querySelectorAll('[data-action="add-column"]')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const tid = e.target.closest(".t-card").dataset.tid;
+              const t = state.schema.tables.find((t) => t.id === tid);
+              if (!t) return;
+              const newCol = makeColumn({ name: "" });
+              t.columns.push(newCol);
+              render();
+              const inp = document.querySelector(
+                `.t-card[data-tid="${t.id}"] .col-row[data-cid="${newCol.id}"] [data-action="col-name"]`,
+              );
+              if (inp) inp.focus();
+            });
+          });
+        document
+          .querySelectorAll('[data-action="delete-column"]')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const tid = e.target.closest(".t-card").dataset.tid;
+              const cid = e.target.closest(".col-row").dataset.cid;
+              const t = state.schema.tables.find((t) => t.id === tid);
+              if (!t) return;
+              t.columns = t.columns.filter((c) => c.id !== cid);
+              t.relations = (t.relations || []).filter(
+                (r) => r.fromColumnId !== cid,
+              );
+              state.schema.tables.forEach((other) => {
+                other.relations = (other.relations || []).filter(
+                  (r) => !(r.toTableId === tid && r.toColumnId === cid),
+                );
               });
               render();
-            }
-          });
-        });
-        document.querySelectorAll('[data-action="rename-table"]').forEach((inp) => {
-          inp.addEventListener('input', (e) => {
-            const tid = e.target.closest('.t-card').dataset.tid;
-            const t = state.schema.tables.find((t) => t.id === tid);
-            if (t) { t.name = e.target.value; renderSchemaSvg(); }
-          });
-        });
-        document.querySelectorAll('[data-action="add-column"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const tid = e.target.closest('.t-card').dataset.tid;
-            const t = state.schema.tables.find((t) => t.id === tid);
-            if (!t) return;
-            const newCol = makeColumn({ name: '' });
-            t.columns.push(newCol);
-            render();
-            const inp = document.querySelector(`.t-card[data-tid="${t.id}"] .col-row[data-cid="${newCol.id}"] [data-action="col-name"]`);
-            if (inp) inp.focus();
-          });
-        });
-        document.querySelectorAll('[data-action="delete-column"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const tid = e.target.closest('.t-card').dataset.tid;
-            const cid = e.target.closest('.col-row').dataset.cid;
-            const t = state.schema.tables.find((t) => t.id === tid);
-            if (!t) return;
-            t.columns = t.columns.filter((c) => c.id !== cid);
-            t.relations = (t.relations || []).filter((r) => r.fromColumnId !== cid);
-            state.schema.tables.forEach((other) => {
-              other.relations = (other.relations || []).filter((r) => !(r.toTableId === tid && r.toColumnId === cid));
             });
-            render();
           });
-        });
 
         const findCol = (el) => {
-          const tid = el.closest('.t-card').dataset.tid;
-          const cid = el.closest('.col-row').dataset.cid;
+          const tid = el.closest(".t-card").dataset.tid;
+          const cid = el.closest(".col-row").dataset.cid;
           const t = state.schema.tables.find((t) => t.id === tid);
           return { t, c: t && t.columns.find((c) => c.id === cid) };
         };
 
         document.querySelectorAll('[data-action="col-name"]').forEach((inp) => {
-          inp.addEventListener('input', (e) => {
+          inp.addEventListener("input", (e) => {
             const { c } = findCol(e.target);
-            if (c) { c.name = e.target.value; renderSchemaSvg(); }
+            if (c) {
+              c.name = e.target.value;
+              renderSchemaSvg();
+            }
           });
         });
         document.querySelectorAll('[data-action="col-base"]').forEach((sel) => {
-          sel.addEventListener('change', (e) => {
+          sel.addEventListener("change", (e) => {
             const { c } = findCol(e.target);
             if (!c) return;
             const parsed = parseType(c.type);
@@ -598,7 +1185,7 @@
           });
         });
         document.querySelectorAll('[data-action="col-size"]').forEach((inp) => {
-          inp.addEventListener('input', (e) => {
+          inp.addEventListener("input", (e) => {
             const { c } = findCol(e.target);
             if (!c) return;
             const parsed = parseType(c.type);
@@ -606,88 +1193,119 @@
             renderSchemaSvg();
           });
         });
-        document.querySelectorAll('[data-action="col-constraint"]').forEach((sel) => {
-          sel.addEventListener('change', (e) => {
-            const { c } = findCol(e.target);
-            if (!c) return;
-            c.constraint = e.target.value;
-            renderSchemaSvg();
+        document
+          .querySelectorAll('[data-action="col-constraint"]')
+          .forEach((sel) => {
+            sel.addEventListener("change", (e) => {
+              const { c } = findCol(e.target);
+              if (!c) return;
+              c.constraint = e.target.value;
+              renderSchemaSvg();
+            });
           });
-        });
 
         const findRel = (el) => {
-          const tid = el.closest('.t-card').dataset.tid;
-          const rid = el.closest('.rel-row').dataset.rid;
+          const tid = el.closest(".t-card").dataset.tid;
+          const rid = el.closest(".rel-row").dataset.rid;
           const t = state.schema.tables.find((t) => t.id === tid);
           return { t, r: t && (t.relations || []).find((r) => r.id === rid) };
         };
 
-        document.querySelectorAll('[data-action="add-relation"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const tid = e.target.closest('.t-card').dataset.tid;
-            const t = state.schema.tables.find((t) => t.id === tid);
-            if (!t) return;
-            t.relations = t.relations || [];
-            t.relations.push(makeRelation());
-            render();
+        document
+          .querySelectorAll('[data-action="add-relation"]')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const tid = e.target.closest(".t-card").dataset.tid;
+              const t = state.schema.tables.find((t) => t.id === tid);
+              if (!t) return;
+              t.relations = t.relations || [];
+              t.relations.push(makeRelation());
+              render();
+            });
           });
-        });
-        document.querySelectorAll('[data-action="delete-relation"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const tid = e.target.closest('.t-card').dataset.tid;
-            const rid = e.target.closest('.rel-row').dataset.rid;
-            const t = state.schema.tables.find((t) => t.id === tid);
-            if (!t) return;
-            t.relations = (t.relations || []).filter((r) => r.id !== rid);
-            render();
+        document
+          .querySelectorAll('[data-action="delete-relation"]')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const tid = e.target.closest(".t-card").dataset.tid;
+              const rid = e.target.closest(".rel-row").dataset.rid;
+              const t = state.schema.tables.find((t) => t.id === tid);
+              if (!t) return;
+              t.relations = (t.relations || []).filter((r) => r.id !== rid);
+              render();
+            });
           });
-        });
         document.querySelectorAll('[data-action="rel-from"]').forEach((sel) => {
-          sel.addEventListener('change', (e) => {
+          sel.addEventListener("change", (e) => {
             const { r } = findRel(e.target);
-            if (r) { r.fromColumnId = e.target.value; render(); }
+            if (r) {
+              r.fromColumnId = e.target.value;
+              render();
+            }
           });
         });
-        document.querySelectorAll('[data-action="rel-to-table"]').forEach((sel) => {
-          sel.addEventListener('change', (e) => {
-            const { r } = findRel(e.target);
-            if (!r) return;
-            r.toTableId = e.target.value;
-            r.toColumnId = '';
-            render(); // re-render so to-column dropdown repopulates
+        document
+          .querySelectorAll('[data-action="rel-to-table"]')
+          .forEach((sel) => {
+            sel.addEventListener("change", (e) => {
+              const { r } = findRel(e.target);
+              if (!r) return;
+              r.toTableId = e.target.value;
+              r.toColumnId = "";
+              render(); // re-render so to-column dropdown repopulates
+            });
           });
-        });
-        document.querySelectorAll('[data-action="rel-to-col"]').forEach((sel) => {
-          sel.addEventListener('change', (e) => {
-            const { r } = findRel(e.target);
-            if (r) { r.toColumnId = e.target.value; render(); }
+        document
+          .querySelectorAll('[data-action="rel-to-col"]')
+          .forEach((sel) => {
+            sel.addEventListener("change", (e) => {
+              const { r } = findRel(e.target);
+              if (r) {
+                r.toColumnId = e.target.value;
+                render();
+              }
+            });
           });
-        });
         document.querySelectorAll('[data-action="rel-card"]').forEach((sel) => {
-          sel.addEventListener('change', (e) => {
+          sel.addEventListener("change", (e) => {
             const { r } = findRel(e.target);
-            if (r) { r.cardinality = e.target.value; renderSchemaSvg(); }
+            if (r) {
+              r.cardinality = e.target.value;
+              renderSchemaSvg();
+            }
           });
         });
-        document.querySelectorAll('[data-action="rel-label"]').forEach((inp) => {
-          inp.addEventListener('input', (e) => {
-            const { r } = findRel(e.target);
-            if (r) { r.label = e.target.value; renderSchemaSvg(); }
+        document
+          .querySelectorAll('[data-action="rel-label"]')
+          .forEach((inp) => {
+            inp.addEventListener("input", (e) => {
+              const { r } = findRel(e.target);
+              if (r) {
+                r.label = e.target.value;
+                renderSchemaSvg();
+              }
+            });
           });
-        });
       }
 
-      const NS = 'http://www.w3.org/2000/svg';
-      const RH = 28, HH = 38, TW = 240;
+      const NS = "http://www.w3.org/2000/svg";
+      const RH = 28,
+        HH = 38,
+        TW = 240;
       const C = {
-        HDR: '#1e3a5f', HDR_T: '#ffffff',
-        ROW_A: '#ffffff', ROW_B: '#f8faff', BRD: '#e2e8f0',
-        COL_N: '#1e293b', COL_T: '#94a3b8', REL: '#6366f1',
+        HDR: "#1e3a5f",
+        HDR_T: "#ffffff",
+        ROW_A: "#ffffff",
+        ROW_B: "#f8faff",
+        BRD: "#e2e8f0",
+        COL_N: "#1e293b",
+        COL_T: "#94a3b8",
+        REL: "#6366f1",
       };
       const BADGE = {
-        PK: { bg: '#fef9c3', t: '#854d0e' },
-        FK: { bg: '#dbeafe', t: '#1e40af' },
-        UQ: { bg: '#dcfce7', t: '#166534' },
+        PK: { bg: "#fef9c3", t: "#854d0e" },
+        FK: { bg: "#dbeafe", t: "#1e40af" },
+        UQ: { bg: "#dcfce7", t: "#166534" },
       };
 
       function mk(tag, attrs) {
@@ -696,19 +1314,26 @@
         return e;
       }
       function txt(x, y, s, attrs) {
-        const e = mk('text', { x, y, ...attrs });
+        const e = mk("text", { x, y, ...attrs });
         e.textContent = s;
         return e;
       }
-      function tableHeight(t) { return HH + t.columns.length * RH; }
+      function tableHeight(t) {
+        return HH + t.columns.length * RH;
+      }
 
       function layoutTables() {
         // Default grid: 2 columns, 60px gap, top-left at (40, 40).
         // Tables with custom x/y (set via drag) override their grid slot.
-        const COLS = 2, GAP_X = 80, GAP_Y = 60, X0 = 40, Y0 = 40;
+        const COLS = 2,
+          GAP_X = 80,
+          GAP_Y = 60,
+          X0 = 40,
+          Y0 = 40;
         const rows = [];
         state.schema.tables.forEach((t, i) => {
-          const col = i % COLS, row = Math.floor(i / COLS);
+          const col = i % COLS,
+            row = Math.floor(i / COLS);
           rows[row] = rows[row] || [];
           rows[row][col] = t;
         });
@@ -723,7 +1348,7 @@
           yCursor += rowMaxH + GAP_Y;
         });
         state.schema.tables.forEach((t) => {
-          if (typeof t.x === 'number' && typeof t.y === 'number') {
+          if (typeof t.x === "number" && typeof t.y === "number") {
             positions[t.id] = { x: t.x, y: t.y };
           }
         });
@@ -736,77 +1361,154 @@
 
         // Clip path so row backgrounds respect rounded corners.
         const cpId = `cp-${t.id}`;
-        const cp = mk('clipPath', { id: cpId });
-        cp.appendChild(mk('rect', { x, y, width: TW, height: h, rx: 8 }));
+        const cp = mk("clipPath", { id: cpId });
+        cp.appendChild(mk("rect", { x, y, width: TW, height: h, rx: 8 }));
         svg.appendChild(cp);
 
         // Wrapping group makes the table draggable as a unit (cursor: move).
         // touch-action: none lets pointer events handle dragging on touch screens
         // without the browser interpreting the gesture as a scroll.
-        const wrap = mk('g', { 'data-table-drag': t.id, style: 'cursor: move; touch-action: none' });
+        const wrap = mk("g", {
+          "data-table-drag": t.id,
+          style: "cursor: move; touch-action: none",
+        });
 
         // Shadow.
-        wrap.appendChild(mk('rect', { x: x + 3, y: y + 4, width: TW, height: h, rx: 8, fill: 'rgba(0,0,0,.07)' }));
+        wrap.appendChild(
+          mk("rect", {
+            x: x + 3,
+            y: y + 4,
+            width: TW,
+            height: h,
+            rx: 8,
+            fill: "rgba(0,0,0,.07)",
+          }),
+        );
 
-        const g = mk('g', { 'clip-path': `url(#${cpId})` });
+        const g = mk("g", { "clip-path": `url(#${cpId})` });
 
         // Header.
-        g.appendChild(mk('rect', { x, y, width: TW, height: HH, fill: C.HDR }));
-        g.appendChild(txt(x + TW / 2, y + HH / 2 + 1, t.name || '(unnamed)', {
-          'text-anchor': 'middle', 'dominant-baseline': 'central',
-          fill: C.HDR_T, 'font-family': "'Inter',sans-serif",
-          'font-size': 13, 'font-weight': 700, 'letter-spacing': '0.8',
-        }));
+        g.appendChild(mk("rect", { x, y, width: TW, height: HH, fill: C.HDR }));
+        g.appendChild(
+          txt(x + TW / 2, y + HH / 2 + 1, t.name || "(unnamed)", {
+            "text-anchor": "middle",
+            "dominant-baseline": "central",
+            fill: C.HDR_T,
+            "font-family": "'Inter',sans-serif",
+            "font-size": 13,
+            "font-weight": 700,
+            "letter-spacing": "0.8",
+          }),
+        );
 
         // Rows.
         t.columns.forEach((col, i) => {
           const ry = y + HH + i * RH;
           const fill = i % 2 === 0 ? C.ROW_A : C.ROW_B;
-          g.appendChild(mk('rect', { x, y: ry, width: TW, height: RH, fill }));
-          g.appendChild(mk('line', { x1: x, y1: ry, x2: x + TW, y2: ry, stroke: C.BRD, 'stroke-width': 0.5 }));
+          g.appendChild(mk("rect", { x, y: ry, width: TW, height: RH, fill }));
+          g.appendChild(
+            mk("line", {
+              x1: x,
+              y1: ry,
+              x2: x + TW,
+              y2: ry,
+              stroke: C.BRD,
+              "stroke-width": 0.5,
+            }),
+          );
 
           let nx = x + 8;
           if (col.constraint && BADGE[col.constraint]) {
             const b = BADGE[col.constraint];
-            g.appendChild(mk('rect', { x: x + 6, y: ry + 7, width: 26, height: 14, rx: 3, fill: b.bg }));
-            g.appendChild(txt(x + 19, ry + RH / 2, col.constraint, {
-              'text-anchor': 'middle', 'dominant-baseline': 'central',
-              fill: b.t, 'font-family': "'JetBrains Mono',monospace",
-              'font-size': 9, 'font-weight': 600,
-            }));
+            g.appendChild(
+              mk("rect", {
+                x: x + 6,
+                y: ry + 7,
+                width: 26,
+                height: 14,
+                rx: 3,
+                fill: b.bg,
+              }),
+            );
+            g.appendChild(
+              txt(x + 19, ry + RH / 2, col.constraint, {
+                "text-anchor": "middle",
+                "dominant-baseline": "central",
+                fill: b.t,
+                "font-family": "'JetBrains Mono',monospace",
+                "font-size": 9,
+                "font-weight": 600,
+              }),
+            );
             nx = x + 37;
           }
-          g.appendChild(txt(nx, ry + RH / 2, col.name || '(unnamed)', {
-            'dominant-baseline': 'central', fill: C.COL_N,
-            'font-family': "'JetBrains Mono',monospace",
-            'font-size': 11, 'font-weight': col.constraint ? 500 : 400,
-          }));
-          g.appendChild(txt(x + TW - 8, ry + RH / 2, col.type || '', {
-            'text-anchor': 'end', 'dominant-baseline': 'central',
-            fill: C.COL_T, 'font-family': "'JetBrains Mono',monospace",
-            'font-size': 10,
-          }));
+          g.appendChild(
+            txt(nx, ry + RH / 2, col.name || "(unnamed)", {
+              "dominant-baseline": "central",
+              fill: C.COL_N,
+              "font-family": "'JetBrains Mono',monospace",
+              "font-size": 11,
+              "font-weight": col.constraint ? 500 : 400,
+            }),
+          );
+          g.appendChild(
+            txt(x + TW - 8, ry + RH / 2, col.type || "", {
+              "text-anchor": "end",
+              "dominant-baseline": "central",
+              fill: C.COL_T,
+              "font-family": "'JetBrains Mono',monospace",
+              "font-size": 10,
+            }),
+          );
         });
 
         wrap.appendChild(g);
 
         // Border.
-        wrap.appendChild(mk('rect', { x, y, width: TW, height: h, rx: 8, fill: 'none', stroke: C.BRD, 'stroke-width': 1 }));
+        wrap.appendChild(
+          mk("rect", {
+            x,
+            y,
+            width: TW,
+            height: h,
+            rx: 8,
+            fill: "none",
+            stroke: C.BRD,
+            "stroke-width": 1,
+          }),
+        );
 
         svg.appendChild(wrap);
       }
 
       function seg(x1, y1, x2, y2) {
-        return mk('line', { x1, y1, x2, y2, stroke: C.REL, 'stroke-width': 1.5, 'stroke-linecap': 'round' });
+        return mk("line", {
+          x1,
+          y1,
+          x2,
+          y2,
+          stroke: C.REL,
+          "stroke-width": 1.5,
+          "stroke-linecap": "round",
+        });
       }
       function relPath(d) {
-        return mk('path', { d, fill: 'none', stroke: C.REL, 'stroke-width': 1.5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+        return mk("path", {
+          d,
+          fill: "none",
+          stroke: C.REL,
+          "stroke-width": 1.5,
+          "stroke-linecap": "round",
+          "stroke-linejoin": "round",
+        });
       }
 
       // Crow's foot at the "many" side. dir = 'right' means the line arrives going → into the box's LEFT edge.
       function crowfoot(g, bx, by, dir) {
-        const F = 16, B = 9, BAR = 23;
-        if (dir === 'right') {
+        const F = 16,
+          B = 9,
+          BAR = 23;
+        if (dir === "right") {
           g.appendChild(seg(bx - F, by, bx, by - B));
           g.appendChild(seg(bx - F, by, bx, by));
           g.appendChild(seg(bx - F, by, bx, by + B));
@@ -820,9 +1522,11 @@
       }
       // Single bar at the "one" side. dir = 'right' means the line leaves going → from the box's RIGHT edge.
       function onebar(g, ex, ey, dir) {
-        const OFF = 8, H = 9;
-        if (dir === 'right') g.appendChild(seg(ex + OFF, ey - H, ex + OFF, ey + H));
-        else                 g.appendChild(seg(ex - OFF, ey - H, ex - OFF, ey + H));
+        const OFF = 8,
+          H = 9;
+        if (dir === "right")
+          g.appendChild(seg(ex + OFF, ey - H, ex + OFF, ey + H));
+        else g.appendChild(seg(ex - OFF, ey - H, ex - OFF, ey + H));
       }
 
       function collectRelationships(positions) {
@@ -830,29 +1534,38 @@
         state.schema.tables.forEach((srcTable) => {
           (srcTable.relations || []).forEach((rel) => {
             if (!rel.fromColumnId || !rel.toTableId || !rel.toColumnId) return;
-            const srcCol = srcTable.columns.find((c) => c.id === rel.fromColumnId);
+            const srcCol = srcTable.columns.find(
+              (c) => c.id === rel.fromColumnId,
+            );
             if (!srcCol) return;
-            const tgtTable = state.schema.tables.find((t) => t.id === rel.toTableId);
+            const tgtTable = state.schema.tables.find(
+              (t) => t.id === rel.toTableId,
+            );
             if (!tgtTable) return;
-            const tgtCol = tgtTable.columns.find((c) => c.id === rel.toColumnId);
+            const tgtCol = tgtTable.columns.find(
+              (c) => c.id === rel.toColumnId,
+            );
             if (!tgtCol) return;
             rels.push({
-              srcTable, srcCol, tgtTable, tgtCol,
+              srcTable,
+              srcCol,
+              tgtTable,
+              tgtCol,
               label: rel.label,
-              cardinality: rel.cardinality || '1:N',
+              cardinality: rel.cardinality || "1:N",
             });
           });
         });
         // Lane assignment so parallel relationships between the same table pair don't overlap.
         const groups = {};
         rels.forEach((r) => {
-          const key = [r.srcTable.id, r.tgtTable.id].sort().join('::');
+          const key = [r.srcTable.id, r.tgtTable.id].sort().join("::");
           groups[key] = groups[key] || [];
           r._idx = groups[key].length;
           groups[key].push(r);
         });
         rels.forEach((r) => {
-          const key = [r.srcTable.id, r.tgtTable.id].sort().join('::');
+          const key = [r.srcTable.id, r.tgtTable.id].sort().join("::");
           r._count = groups[key].length;
         });
         return rels;
@@ -869,17 +1582,23 @@
         const sy = columnY(rel.srcTable, rel.srcCol, sp);
         const ty = columnY(rel.tgtTable, rel.tgtCol, tp);
 
-        const srcCx = sp.x + TW / 2, tgtCx = tp.x + TW / 2;
+        const srcCx = sp.x + TW / 2,
+          tgtCx = tp.x + TW / 2;
         let sx, srcDir, ex, tgtDir;
         if (srcCx > tgtCx) {
-          sx = sp.x;            srcDir = 'right';
-          ex = tp.x + TW;       tgtDir = 'right';
+          sx = sp.x;
+          srcDir = "right";
+          ex = tp.x + TW;
+          tgtDir = "right";
         } else {
-          sx = sp.x + TW;       srcDir = 'left';
-          ex = tp.x;            tgtDir = 'left';
+          sx = sp.x + TW;
+          srcDir = "left";
+          ex = tp.x;
+          tgtDir = "left";
         }
 
-        const idx = rel._idx || 0, count = rel._count || 1;
+        const idx = rel._idx || 0,
+          count = rel._count || 1;
         const lane = idx - (count - 1) / 2;
         const elbowOffset = lane * 22;
         const endOffset = lane * 4;
@@ -888,44 +1607,53 @@
         const midX = (sx + ex) / 2 + elbowOffset;
 
         const d = `M${ex},${ty2} L${midX},${ty2} L${midX},${sy2} L${sx},${sy2}`;
-        const g = mk('g', {});
+        const g = mk("g", {});
         g.appendChild(relPath(d));
 
         // 'X:Y' — X = from-side cardinality, Y = to-side cardinality. '1' → bar; 'N' → crow's foot.
-        const card = (rel.cardinality || '1:N').split(':');
+        const card = (rel.cardinality || "1:N").split(":");
         const fromCard = card[0];
-        const toCard = card[1] || '1';
-        const inv = (d) => (d === 'right' ? 'left' : 'right');
+        const toCard = card[1] || "1";
+        const inv = (d) => (d === "right" ? "left" : "right");
         // From side at (sx, sy2). onebar's `dir` matches connector travel direction at the PK side
         // by convention; at the FK/source side we need to invert it so the bar sits OUTSIDE the box.
         // crowfoot at the source side uses srcDir directly (that was the original convention).
-        if (fromCard === '1') onebar(g, sx, sy2, inv(srcDir));
-        else                   crowfoot(g, sx, sy2, srcDir);
+        if (fromCard === "1") onebar(g, sx, sy2, inv(srcDir));
+        else crowfoot(g, sx, sy2, srcDir);
         // To side at (ex, ty2). onebar at PK side uses tgtDir directly; crowfoot at PK side needs inversion.
-        if (toCard === '1') onebar(g, ex, ty2, tgtDir);
-        else                 crowfoot(g, ex, ty2, inv(tgtDir));
+        if (toCard === "1") onebar(g, ex, ty2, tgtDir);
+        else crowfoot(g, ex, ty2, inv(tgtDir));
 
         if (rel.label) {
-          g.appendChild(txt(midX, Math.min(sy2, ty2) - 6, rel.label, {
-            'text-anchor': 'middle', fill: '#818cf8',
-            'font-family': "'Inter',sans-serif", 'font-size': 11, 'font-style': 'italic',
-          }));
+          g.appendChild(
+            txt(midX, Math.min(sy2, ty2) - 6, rel.label, {
+              "text-anchor": "middle",
+              fill: "#818cf8",
+              "font-family": "'Inter',sans-serif",
+              "font-size": 11,
+              "font-style": "italic",
+            }),
+          );
         }
         svg.appendChild(g);
       }
 
       function renderSchemaSvg() {
-        const svg = document.getElementById('svg');
+        const svg = document.getElementById("svg");
         while (svg.firstChild) svg.removeChild(svg.firstChild);
 
         if (state.schema.tables.length === 0) {
-          svg.setAttribute('width', 800);
-          svg.setAttribute('height', 200);
-          svg.appendChild(txt(400, 100, 'Add a table to see your diagram here', {
-            'text-anchor': 'middle', 'dominant-baseline': 'central',
-            fill: '#94a3b8', 'font-family': "'Inter',sans-serif",
-            'font-size': 14,
-          }));
+          svg.setAttribute("width", 800);
+          svg.setAttribute("height", 200);
+          svg.appendChild(
+            txt(400, 100, "Add a table to see your diagram here", {
+              "text-anchor": "middle",
+              "dominant-baseline": "central",
+              fill: "#94a3b8",
+              "font-family": "'Inter',sans-serif",
+              "font-size": 14,
+            }),
+          );
           return;
         }
 
@@ -939,38 +1667,40 @@
         state.schema.tables.forEach((t) => drawTable(svg, t, positions[t.id]));
 
         // Resize SVG to fit.
-        let maxX = 0, maxY = 0;
+        let maxX = 0,
+          maxY = 0;
         state.schema.tables.forEach((t) => {
           const p = positions[t.id];
           maxX = Math.max(maxX, p.x + TW);
           maxY = Math.max(maxY, p.y + tableHeight(t));
         });
-        svg.setAttribute('width', maxX + 40);
-        svg.setAttribute('height', maxY + 40);
+        svg.setAttribute("width", maxX + 40);
+        svg.setAttribute("height", maxY + 40);
       }
 
       function svgToCanvas(scale) {
         return new Promise((resolve, reject) => {
-          const src = document.getElementById('svg');
-          const w = parseInt(src.getAttribute('width'), 10);
-          const h = parseInt(src.getAttribute('height'), 10);
+          const src = document.getElementById("svg");
+          const w = parseInt(src.getAttribute("width"), 10);
+          const h = parseInt(src.getAttribute("height"), 10);
 
           const clone = src.cloneNode(true);
-          clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-          clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
-          clone.setAttribute('width', w);
-          clone.setAttribute('height', h);
+          clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+          clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+          clone.setAttribute("width", w);
+          clone.setAttribute("height", h);
 
           const xml = new XMLSerializer().serializeToString(clone);
-          const svg64 = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
+          const svg64 =
+            "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
 
           const img = new Image();
           img.onload = () => {
-            const canvas = document.createElement('canvas');
+            const canvas = document.createElement("canvas");
             canvas.width = w * scale;
             canvas.height = h * scale;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#ffffff';
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.setTransform(scale, 0, 0, scale, 0, 0);
             ctx.drawImage(img, 0, 0);
@@ -982,7 +1712,7 @@
       }
 
       function downloadHref(href, name) {
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = href;
         a.download = name;
         document.body.appendChild(a);
@@ -991,106 +1721,177 @@
       }
 
       function isDiagramEmpty() {
-        return state.mode === 'schema'
+        return state.mode === "schema"
           ? state.schema.tables.length === 0
-          : state.erd.entities.length === 0 && state.erd.relationships.length === 0;
+          : state.erd.entities.length === 0 &&
+              state.erd.relationships.length === 0;
       }
 
       async function downloadPng() {
-        if (isDiagramEmpty()) { alert('Add something to the diagram first.'); return; }
+        if (isDiagramEmpty()) {
+          alert("Add something to the diagram first.");
+          return;
+        }
         const { canvas } = await svgToCanvas(2);
         canvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob);
-          downloadHref(url, state.mode === 'schema' ? 'schema.png' : 'erd.png');
+          downloadHref(url, state.mode === "schema" ? "schema.png" : "erd.png");
           setTimeout(() => URL.revokeObjectURL(url), 1000);
-        }, 'image/png');
+        }, "image/png");
       }
 
       async function downloadPdf() {
-        if (isDiagramEmpty()) { alert('Add something to the diagram first.'); return; }
+        if (isDiagramEmpty()) {
+          alert("Add something to the diagram first.");
+          return;
+        }
         const { canvas, w, h } = await svgToCanvas(2);
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
-          orientation: w >= h ? 'landscape' : 'portrait',
-          unit: 'pt',
+          orientation: w >= h ? "landscape" : "portrait",
+          unit: "pt",
           format: [w, h],
         });
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, w, h);
-        pdf.save(state.mode === 'schema' ? 'schema.pdf' : 'erd.pdf');
+        pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, w, h);
+        pdf.save(state.mode === "schema" ? "schema.pdf" : "erd.pdf");
       }
 
       function loadSchemaSample() {
-        if (state.schema.tables.length > 0 && !confirm('Replace your current diagram with the sample?')) return;
+        if (
+          state.schema.tables.length > 0 &&
+          !confirm("Replace your current diagram with the sample?")
+        )
+          return;
         _idSeq = 0;
 
-        const departments = { id: uid('t'), name: 'DEPARTMENTS', relations: [], columns: [
-          makeColumn({ name: 'dept_id', type: 'NUMBER(5)', constraint: 'PK' }),
-          makeColumn({ name: 'name', type: 'VARCHAR2(50)', constraint: 'UQ' }),
-          makeColumn({ name: 'location', type: 'VARCHAR2(100)' }),
-          makeColumn({ name: 'budget', type: 'NUMBER(10)' }),
-        ]};
+        const departments = {
+          id: uid("t"),
+          name: "DEPARTMENTS",
+          relations: [],
+          columns: [
+            makeColumn({
+              name: "dept_id",
+              type: "NUMBER(5)",
+              constraint: "PK",
+            }),
+            makeColumn({
+              name: "name",
+              type: "VARCHAR2(50)",
+              constraint: "UQ",
+            }),
+            makeColumn({ name: "location", type: "VARCHAR2(100)" }),
+            makeColumn({ name: "budget", type: "NUMBER(10)" }),
+          ],
+        };
         const employeesCols = [
-          makeColumn({ name: 'emp_id', type: 'NUMBER(5)', constraint: 'PK' }),
-          makeColumn({ name: 'first_name', type: 'VARCHAR2(50)' }),
-          makeColumn({ name: 'last_name', type: 'VARCHAR2(50)' }),
-          makeColumn({ name: 'email', type: 'VARCHAR2(100)', constraint: 'UQ' }),
-          makeColumn({ name: 'hire_date', type: 'DATE' }),
-          makeColumn({ name: 'salary', type: 'NUMBER(8)' }),
-          makeColumn({ name: 'dept_id', type: 'NUMBER(5)', constraint: 'FK' }),
+          makeColumn({ name: "emp_id", type: "NUMBER(5)", constraint: "PK" }),
+          makeColumn({ name: "first_name", type: "VARCHAR2(50)" }),
+          makeColumn({ name: "last_name", type: "VARCHAR2(50)" }),
+          makeColumn({
+            name: "email",
+            type: "VARCHAR2(100)",
+            constraint: "UQ",
+          }),
+          makeColumn({ name: "hire_date", type: "DATE" }),
+          makeColumn({ name: "salary", type: "NUMBER(8)" }),
+          makeColumn({ name: "dept_id", type: "NUMBER(5)", constraint: "FK" }),
         ];
-        const employees = { id: uid('t'), name: 'EMPLOYEES', columns: employeesCols, relations: [
-          makeRelation({ fromColumnId: employeesCols[6].id, toTableId: departments.id, toColumnId: departments.columns[0].id, cardinality: 'N:1', label: 'belongs to' }),
-        ]};
+        const employees = {
+          id: uid("t"),
+          name: "EMPLOYEES",
+          columns: employeesCols,
+          relations: [
+            makeRelation({
+              fromColumnId: employeesCols[6].id,
+              toTableId: departments.id,
+              toColumnId: departments.columns[0].id,
+              cardinality: "N:1",
+              label: "belongs to",
+            }),
+          ],
+        };
 
         state.schema = { tables: [departments, employees] };
         render();
       }
 
-      document.getElementById('btn-sample').addEventListener('click', () => {
-        if (state.mode === 'schema') loadSchemaSample();
+      document.getElementById("btn-sample").addEventListener("click", () => {
+        if (state.mode === "schema") loadSchemaSample();
         else loadErdSample();
       });
-      document.getElementById('btn-reset').addEventListener('click', () => {
-        if (state.mode === 'schema') {
-          if (state.schema.tables.length === 0 || confirm('Clear everything?')) {
+      document.getElementById("btn-reset").addEventListener("click", () => {
+        if (state.mode === "schema") {
+          if (
+            state.schema.tables.length === 0 ||
+            confirm("Clear everything?")
+          ) {
             state.schema = { tables: [] };
             render();
           }
         } else {
-          if ((state.erd.entities.length === 0 && state.erd.relationships.length === 0) || confirm('Clear everything?')) {
+          if (
+            (state.erd.entities.length === 0 &&
+              state.erd.relationships.length === 0) ||
+            confirm("Clear everything?")
+          ) {
             state.erd = { entities: [], relationships: [] };
             render();
           }
         }
       });
-      document.getElementById('btn-reset-layout').addEventListener('click', () => {
-        if (state.mode === 'schema') {
-          state.schema.tables.forEach((t) => { delete t.x; delete t.y; });
-          renderSchemaSvg();
-        } else {
-          state.erd.entities.forEach((e) => { delete e.x; delete e.y; (e.attributes || []).forEach(clearAttrPin); });
-          state.erd.relationships.forEach((r) => { delete r.x; delete r.y; (r.attributes || []).forEach(clearAttrPin); });
-          renderErdSvg();
-        }
-      });
-      document.getElementById('btn-png').addEventListener('click', downloadPng);
-      document.getElementById('btn-pdf').addEventListener('click', downloadPdf);
+      document
+        .getElementById("btn-reset-layout")
+        .addEventListener("click", () => {
+          if (state.mode === "schema") {
+            state.schema.tables.forEach((t) => {
+              delete t.x;
+              delete t.y;
+            });
+            renderSchemaSvg();
+          } else {
+            state.erd.entities.forEach((e) => {
+              delete e.x;
+              delete e.y;
+              (e.attributes || []).forEach(clearAttrPin);
+            });
+            state.erd.relationships.forEach((r) => {
+              delete r.x;
+              delete r.y;
+              (r.attributes || []).forEach(clearAttrPin);
+            });
+            renderErdSvg();
+          }
+        });
+      document.getElementById("btn-png").addEventListener("click", downloadPng);
+      document.getElementById("btn-pdf").addEventListener("click", downloadPdf);
 
       function setMode(newMode) {
         if (state.mode === newMode) return;
         state.mode = newMode;
-        document.getElementById('mode-schema').classList.toggle('active', newMode === 'schema');
-        document.getElementById('mode-schema').setAttribute('aria-pressed', String(newMode === 'schema'));
-        document.getElementById('mode-erd').classList.toggle('active', newMode === 'erd');
-        document.getElementById('mode-erd').setAttribute('aria-pressed', String(newMode === 'erd'));
+        document
+          .getElementById("mode-schema")
+          .classList.toggle("active", newMode === "schema");
+        document
+          .getElementById("mode-schema")
+          .setAttribute("aria-pressed", String(newMode === "schema"));
+        document
+          .getElementById("mode-erd")
+          .classList.toggle("active", newMode === "erd");
+        document
+          .getElementById("mode-erd")
+          .setAttribute("aria-pressed", String(newMode === "erd"));
         render();
       }
-      document.getElementById('mode-schema').addEventListener('click', () => setMode('schema'));
-      document.getElementById('mode-erd').addEventListener('click', () => setMode('erd'));
+      document
+        .getElementById("mode-schema")
+        .addEventListener("click", () => setMode("schema"));
+      document
+        .getElementById("mode-erd")
+        .addEventListener("click", () => setMode("erd"));
 
       // Drag tables via Pointer Events so mouse, touch, and stylus all work.
       (function wireDrag() {
-        const svgEl = document.getElementById('svg');
+        const svgEl = document.getElementById("svg");
         let drag = null;
         const toSvg = (evt) => {
           const r = svgEl.getBoundingClientRect();
@@ -1100,19 +1901,19 @@
         // Returns { ref, pos } for the schema/erd node under the pointer, or null.
         function findDragTarget(e) {
           // Schema mode: table drag.
-          const schHandle = e.target.closest('[data-table-drag]');
-          if (schHandle && state.mode === 'schema') {
-            const tid = schHandle.getAttribute('data-table-drag');
+          const schHandle = e.target.closest("[data-table-drag]");
+          if (schHandle && state.mode === "schema") {
+            const tid = schHandle.getAttribute("data-table-drag");
             const t = state.schema.tables.find((tt) => tt.id === tid);
             if (!t) return null;
             const pos = layoutTables()[tid];
             return { ref: t, pos };
           }
           // ERD mode: entity / relationship / attribute drag.
-          const erdHandle = e.target.closest('[data-erd-drag]');
-          if (erdHandle && state.mode === 'erd') {
-            const key = erdHandle.getAttribute('data-erd-drag'); // "<kind>:<id>"
-            const [kind, id] = key.split(':');
+          const erdHandle = e.target.closest("[data-erd-drag]");
+          if (erdHandle && state.mode === "erd") {
+            const key = erdHandle.getAttribute("data-erd-drag"); // "<kind>:<id>"
+            const [kind, id] = key.split(":");
             const target = findErdNode(kind, id);
             if (!target) return null;
             const positions = layoutErd();
@@ -1123,21 +1924,28 @@
           return null;
         }
 
-        svgEl.addEventListener('pointerdown', (e) => {
+        svgEl.addEventListener("pointerdown", (e) => {
           const t = findDragTarget(e);
           if (!t) return;
           const pt = toSvg(e);
-          drag = { ref: t.ref, offX: pt.x - t.pos.x, offY: pt.y - t.pos.y, pointerId: e.pointerId };
-          document.body.style.userSelect = 'none';
-          try { svgEl.setPointerCapture(e.pointerId); } catch (_) {}
+          drag = {
+            ref: t.ref,
+            offX: pt.x - t.pos.x,
+            offY: pt.y - t.pos.y,
+            pointerId: e.pointerId,
+          };
+          document.body.style.userSelect = "none";
+          try {
+            svgEl.setPointerCapture(e.pointerId);
+          } catch (_) {}
           e.preventDefault();
         });
-        document.addEventListener('pointermove', (e) => {
+        document.addEventListener("pointermove", (e) => {
           if (!drag) return;
           const pt = toSvg(e);
           // Schema tables use top-left coordinates so clamp to >=0; ERD nodes use centre coordinates
           // and clamping at zero would cut them in half. Let the renderer handle bounds via SVG sizing.
-          if (state.mode === 'schema') {
+          if (state.mode === "schema") {
             drag.ref.x = Math.max(0, pt.x - drag.offX);
             drag.ref.y = Math.max(0, pt.y - drag.offY);
             renderSchemaSvg();
@@ -1149,12 +1957,15 @@
         });
         const endDrag = (e) => {
           if (!drag) return;
-          try { if (e && e.pointerId != null) svgEl.releasePointerCapture(e.pointerId); } catch (_) {}
+          try {
+            if (e && e.pointerId != null)
+              svgEl.releasePointerCapture(e.pointerId);
+          } catch (_) {}
           drag = null;
-          document.body.style.userSelect = '';
+          document.body.style.userSelect = "";
         };
-        document.addEventListener('pointerup', endDrag);
-        document.addEventListener('pointercancel', endDrag);
+        document.addEventListener("pointerup", endDrag);
+        document.addEventListener("pointercancel", endDrag);
       })();
 
       // ============================================================================
@@ -1163,10 +1974,10 @@
 
       function makeAttribute(overrides = {}) {
         return {
-          id: uid('a'),
-          name: 'attribute',
-          kind: 'simple',           // 'simple' | 'key' | 'partial-key' | 'composite' | 'multivalued' | 'derived'
-          children: [],             // only used for kind === 'composite'
+          id: uid("a"),
+          name: "attribute",
+          kind: "simple", // 'simple' | 'key' | 'partial-key' | 'composite' | 'multivalued' | 'derived'
+          children: [], // only used for kind === 'composite'
           ...overrides,
         };
       }
@@ -1174,9 +1985,9 @@
       function makeEntity(overrides = {}) {
         const n = state.erd.entities.length + 1;
         return {
-          id: uid('e'),
+          id: uid("e"),
           name: `ENTITY_${n}`,
-          kind: 'strong',           // 'strong' | 'weak'
+          kind: "strong", // 'strong' | 'weak'
           attributes: [],
           ...overrides,
         };
@@ -1184,11 +1995,11 @@
 
       function makeParticipant(overrides = {}) {
         return {
-          id: uid('p'),
-          entityId: '',
-          role: '',
-          cardinality: '1',         // '1' | 'N' | 'M'
-          participation: 'partial', // 'total' | 'partial'
+          id: uid("p"),
+          entityId: "",
+          role: "",
+          cardinality: "1", // '1' | 'N' | 'M'
+          participation: "partial", // 'total' | 'partial'
           ...overrides,
         };
       }
@@ -1197,9 +2008,9 @@
         const n = state.erd.relationships.length + 1;
         return {
           // Uppercase 'R' disambiguates from schema's makeRelation which uses 'r'.
-          id: uid('R'),
+          id: uid("R"),
           name: `RELATIONSHIP_${n}`,
-          kind: 'normal',           // 'normal' | 'identifying'
+          kind: "normal", // 'normal' | 'identifying'
           attributes: [],
           participants: [],
           ...overrides,
@@ -1207,9 +2018,11 @@
       }
 
       function findErdNode(kind, id) {
-        if (kind === 'entity') return state.erd.entities.find((e) => e.id === id) || null;
-        if (kind === 'relationship') return state.erd.relationships.find((r) => r.id === id) || null;
-        if (kind === 'attribute') {
+        if (kind === "entity")
+          return state.erd.entities.find((e) => e.id === id) || null;
+        if (kind === "relationship")
+          return state.erd.relationships.find((r) => r.id === id) || null;
+        if (kind === "attribute") {
           const search = (list) => {
             for (const a of list) {
               if (a.id === id) return a;
@@ -1232,7 +2045,8 @@
       }
 
       function clearAttrPin(a) {
-        delete a.x; delete a.y;
+        delete a.x;
+        delete a.y;
         (a.children || []).forEach(clearAttrPin);
       }
 
@@ -1241,85 +2055,200 @@
       // ============================================================================
 
       const ERD_C = {
-        ENT_FILL: '#f1f5f9', ENT_STROKE: '#1e3a5f',
-        REL_FILL: '#f1f5f9', REL_STROKE: '#1e3a5f',
-        ATTR_FILL: '#ffffff', ATTR_STROKE: '#1e3a5f',
-        LINE: '#1e3a5f',
-        LABEL: '#0f172a',
+        ENT_FILL: "#f1f5f9",
+        ENT_STROKE: "#1e3a5f",
+        REL_FILL: "#f1f5f9",
+        REL_STROKE: "#1e3a5f",
+        ATTR_FILL: "#ffffff",
+        ATTR_STROKE: "#1e3a5f",
+        LINE: "#1e3a5f",
+        LABEL: "#0f172a",
       };
       const ERD_DIMS = {
-        ENT_W: 130, ENT_H: 40, ENT_DBL_INSET: 4,
-        REL_W: 130, REL_H: 60, REL_DBL_INSET: 5,
-        ATTR_RX: 50, ATTR_RY: 16, ATTR_DBL_INSET: 4,
-        LINE_W: 1.4, DBL_LINE_GAP: 3,
-        UNDERLINE_W: 1.2, UNDERLINE_OFFSET_Y: 6,
+        ENT_W: 130,
+        ENT_H: 40,
+        ENT_DBL_INSET: 4,
+        REL_W: 130,
+        REL_H: 60,
+        REL_DBL_INSET: 5,
+        ATTR_RX: 50,
+        ATTR_RY: 16,
+        ATTR_DBL_INSET: 4,
+        LINE_W: 1.4,
+        DBL_LINE_GAP: 3,
+        UNDERLINE_W: 1.2,
+        UNDERLINE_OFFSET_Y: 6,
       };
 
       // Draws an entity rectangle (double-bordered if weak). Returns the wrapping <g>.
       function drawErdEntity(svg, e, pos) {
         const { ENT_W: w, ENT_H: h, ENT_DBL_INSET: ins } = ERD_DIMS;
-        const x = pos.x - w / 2, y = pos.y - h / 2;
-        const g = mk('g', { 'data-erd-drag': `entity:${e.id}`, style: 'cursor: move; touch-action: none' });
-        g.appendChild(mk('rect', { x: x + 3, y: y + 4, width: w, height: h, rx: 4, fill: 'rgba(0,0,0,.07)' })); // shadow
-        g.appendChild(mk('rect', { x, y, width: w, height: h, rx: 4, fill: ERD_C.ENT_FILL, stroke: ERD_C.ENT_STROKE, 'stroke-width': ERD_DIMS.LINE_W }));
-        if (e.kind === 'weak') {
-          g.appendChild(mk('rect', { x: x + ins, y: y + ins, width: w - 2 * ins, height: h - 2 * ins, rx: 3, fill: 'none', stroke: ERD_C.ENT_STROKE, 'stroke-width': ERD_DIMS.LINE_W }));
+        const x = pos.x - w / 2,
+          y = pos.y - h / 2;
+        const g = mk("g", {
+          "data-erd-drag": `entity:${e.id}`,
+          style: "cursor: move; touch-action: none",
+        });
+        g.appendChild(
+          mk("rect", {
+            x: x + 3,
+            y: y + 4,
+            width: w,
+            height: h,
+            rx: 4,
+            fill: "rgba(0,0,0,.07)",
+          }),
+        ); // shadow
+        g.appendChild(
+          mk("rect", {
+            x,
+            y,
+            width: w,
+            height: h,
+            rx: 4,
+            fill: ERD_C.ENT_FILL,
+            stroke: ERD_C.ENT_STROKE,
+            "stroke-width": ERD_DIMS.LINE_W,
+          }),
+        );
+        if (e.kind === "weak") {
+          g.appendChild(
+            mk("rect", {
+              x: x + ins,
+              y: y + ins,
+              width: w - 2 * ins,
+              height: h - 2 * ins,
+              rx: 3,
+              fill: "none",
+              stroke: ERD_C.ENT_STROKE,
+              "stroke-width": ERD_DIMS.LINE_W,
+            }),
+          );
         }
-        g.appendChild(txt(pos.x, pos.y + 1, e.name || '(unnamed)', {
-          'text-anchor': 'middle', 'dominant-baseline': 'central',
-          fill: ERD_C.LABEL, 'font-family': "'JetBrains Mono', monospace",
-          'font-size': 12, 'font-weight': 700,
-        }));
+        g.appendChild(
+          txt(pos.x, pos.y + 1, e.name || "(unnamed)", {
+            "text-anchor": "middle",
+            "dominant-baseline": "central",
+            fill: ERD_C.LABEL,
+            "font-family": "'JetBrains Mono', monospace",
+            "font-size": 12,
+            "font-weight": 700,
+          }),
+        );
         svg.appendChild(g);
       }
 
       // Draws a relationship diamond (double-bordered if identifying). Returns the wrapping <g>.
       function drawErdRelationship(svg, r, pos) {
         const { REL_W: w, REL_H: h, REL_DBL_INSET: ins } = ERD_DIMS;
-        const x = pos.x, y = pos.y;
-        const pts = (W, H) => `${x},${y - H/2} ${x + W/2},${y} ${x},${y + H/2} ${x - W/2},${y}`;
-        const g = mk('g', { 'data-erd-drag': `relationship:${r.id}`, style: 'cursor: move; touch-action: none' });
-        g.appendChild(mk('polygon', { points: pts(w + 4, h + 4), fill: 'rgba(0,0,0,.07)', transform: `translate(2,3)` })); // shadow
-        g.appendChild(mk('polygon', { points: pts(w, h), fill: ERD_C.REL_FILL, stroke: ERD_C.REL_STROKE, 'stroke-width': ERD_DIMS.LINE_W }));
-        if (r.kind === 'identifying') {
-          g.appendChild(mk('polygon', { points: pts(w - 2 * ins, h - 2 * ins), fill: 'none', stroke: ERD_C.REL_STROKE, 'stroke-width': ERD_DIMS.LINE_W }));
+        const x = pos.x,
+          y = pos.y;
+        const pts = (W, H) =>
+          `${x},${y - H / 2} ${x + W / 2},${y} ${x},${y + H / 2} ${x - W / 2},${y}`;
+        const g = mk("g", {
+          "data-erd-drag": `relationship:${r.id}`,
+          style: "cursor: move; touch-action: none",
+        });
+        g.appendChild(
+          mk("polygon", {
+            points: pts(w + 4, h + 4),
+            fill: "rgba(0,0,0,.07)",
+            transform: `translate(2,3)`,
+          }),
+        ); // shadow
+        g.appendChild(
+          mk("polygon", {
+            points: pts(w, h),
+            fill: ERD_C.REL_FILL,
+            stroke: ERD_C.REL_STROKE,
+            "stroke-width": ERD_DIMS.LINE_W,
+          }),
+        );
+        if (r.kind === "identifying") {
+          g.appendChild(
+            mk("polygon", {
+              points: pts(w - 2 * ins, h - 2 * ins),
+              fill: "none",
+              stroke: ERD_C.REL_STROKE,
+              "stroke-width": ERD_DIMS.LINE_W,
+            }),
+          );
         }
-        g.appendChild(txt(x, y + 1, r.name || '(unnamed)', {
-          'text-anchor': 'middle', 'dominant-baseline': 'central',
-          fill: ERD_C.LABEL, 'font-family': "'JetBrains Mono', monospace",
-          'font-size': 11, 'font-weight': 700,
-        }));
+        g.appendChild(
+          txt(x, y + 1, r.name || "(unnamed)", {
+            "text-anchor": "middle",
+            "dominant-baseline": "central",
+            fill: ERD_C.LABEL,
+            "font-family": "'JetBrains Mono', monospace",
+            "font-size": 11,
+            "font-weight": 700,
+          }),
+        );
         svg.appendChild(g);
       }
 
       // Draws an attribute oval. `kind` controls fill/stroke/underline.
       function drawErdAttribute(svg, a, pos) {
         const { ATTR_RX: rx, ATTR_RY: ry, ATTR_DBL_INSET: ins } = ERD_DIMS;
-        const dashed = a.kind === 'derived';
-        const doubled = a.kind === 'multivalued';
-        const g = mk('g', { 'data-erd-drag': `attribute:${a.id}`, style: 'cursor: move; touch-action: none' });
-        const ovalAttrs = { cx: pos.x, cy: pos.y, rx, ry, fill: ERD_C.ATTR_FILL, stroke: ERD_C.ATTR_STROKE, 'stroke-width': ERD_DIMS.LINE_W };
-        if (dashed) ovalAttrs['stroke-dasharray'] = '5 3';
-        g.appendChild(mk('ellipse', ovalAttrs));
+        const dashed = a.kind === "derived";
+        const doubled = a.kind === "multivalued";
+        const g = mk("g", {
+          "data-erd-drag": `attribute:${a.id}`,
+          style: "cursor: move; touch-action: none",
+        });
+        const ovalAttrs = {
+          cx: pos.x,
+          cy: pos.y,
+          rx,
+          ry,
+          fill: ERD_C.ATTR_FILL,
+          stroke: ERD_C.ATTR_STROKE,
+          "stroke-width": ERD_DIMS.LINE_W,
+        };
+        if (dashed) ovalAttrs["stroke-dasharray"] = "5 3";
+        g.appendChild(mk("ellipse", ovalAttrs));
         if (doubled) {
-          g.appendChild(mk('ellipse', { cx: pos.x, cy: pos.y, rx: rx - ins, ry: ry - ins, fill: 'none', stroke: ERD_C.ATTR_STROKE, 'stroke-width': ERD_DIMS.LINE_W }));
+          g.appendChild(
+            mk("ellipse", {
+              cx: pos.x,
+              cy: pos.y,
+              rx: rx - ins,
+              ry: ry - ins,
+              fill: "none",
+              stroke: ERD_C.ATTR_STROKE,
+              "stroke-width": ERD_DIMS.LINE_W,
+            }),
+          );
         }
         // Label.
-        const label = a.name || '(unnamed)';
-        g.appendChild(txt(pos.x, pos.y + 1, label, {
-          'text-anchor': 'middle', 'dominant-baseline': 'central',
-          fill: ERD_C.LABEL, 'font-family': "'JetBrains Mono', monospace",
-          'font-size': 11, 'font-weight': a.kind === 'key' || a.kind === 'partial-key' ? 600 : 400,
-        }));
+        const label = a.name || "(unnamed)";
+        g.appendChild(
+          txt(pos.x, pos.y + 1, label, {
+            "text-anchor": "middle",
+            "dominant-baseline": "central",
+            fill: ERD_C.LABEL,
+            "font-family": "'JetBrains Mono', monospace",
+            "font-size": 11,
+            "font-weight":
+              a.kind === "key" || a.kind === "partial-key" ? 600 : 400,
+          }),
+        );
         // Underline for key / partial-key — drawn as an explicit <line> so it survives PNG/PDF rasterization.
-        if (a.kind === 'key' || a.kind === 'partial-key') {
+        if (a.kind === "key" || a.kind === "partial-key") {
           // Approximate text width: 6.6px per char at font-size 11 (JetBrains Mono). Sufficient for the underline length.
           const halfW = (label.length * 6.6) / 2;
           // Underline sits just below the text baseline, independent of ATTR_RY so it stays attached to the label.
           const yLine = pos.y + ERD_DIMS.UNDERLINE_OFFSET_Y;
-          const lineAttrs = { x1: pos.x - halfW, y1: yLine, x2: pos.x + halfW, y2: yLine, stroke: ERD_C.LABEL, 'stroke-width': ERD_DIMS.UNDERLINE_W };
-          if (a.kind === 'partial-key') lineAttrs['stroke-dasharray'] = '4 2';
-          g.appendChild(mk('line', lineAttrs));
+          const lineAttrs = {
+            x1: pos.x - halfW,
+            y1: yLine,
+            x2: pos.x + halfW,
+            y2: yLine,
+            stroke: ERD_C.LABEL,
+            "stroke-width": ERD_DIMS.UNDERLINE_W,
+          };
+          if (a.kind === "partial-key") lineAttrs["stroke-dasharray"] = "4 2";
+          g.appendChild(mk("line", lineAttrs));
         }
         svg.appendChild(g);
       }
@@ -1328,84 +2257,234 @@
       function drawErdConnector(svg, x1, y1, x2, y2, doubled) {
         const stroke = ERD_C.LINE;
         if (!doubled) {
-          svg.appendChild(mk('line', { x1, y1, x2, y2, stroke, 'stroke-width': ERD_DIMS.LINE_W }));
+          svg.appendChild(
+            mk("line", {
+              x1,
+              y1,
+              x2,
+              y2,
+              stroke,
+              "stroke-width": ERD_DIMS.LINE_W,
+            }),
+          );
           return;
         }
-        const dx = x2 - x1, dy = y2 - y1;
+        const dx = x2 - x1,
+          dy = y2 - y1;
         const len = Math.max(1, Math.hypot(dx, dy));
-        const ox = -dy / len * (ERD_DIMS.DBL_LINE_GAP / 2);
-        const oy =  dx / len * (ERD_DIMS.DBL_LINE_GAP / 2);
-        svg.appendChild(mk('line', { x1: x1 + ox, y1: y1 + oy, x2: x2 + ox, y2: y2 + oy, stroke, 'stroke-width': ERD_DIMS.LINE_W }));
-        svg.appendChild(mk('line', { x1: x1 - ox, y1: y1 - oy, x2: x2 - ox, y2: y2 - oy, stroke, 'stroke-width': ERD_DIMS.LINE_W }));
+        const ox = (-dy / len) * (ERD_DIMS.DBL_LINE_GAP / 2);
+        const oy = (dx / len) * (ERD_DIMS.DBL_LINE_GAP / 2);
+        svg.appendChild(
+          mk("line", {
+            x1: x1 + ox,
+            y1: y1 + oy,
+            x2: x2 + ox,
+            y2: y2 + oy,
+            stroke,
+            "stroke-width": ERD_DIMS.LINE_W,
+          }),
+        );
+        svg.appendChild(
+          mk("line", {
+            x1: x1 - ox,
+            y1: y1 - oy,
+            x2: x2 - ox,
+            y2: y2 - oy,
+            stroke,
+            "stroke-width": ERD_DIMS.LINE_W,
+          }),
+        );
       }
 
       function loadErdSample() {
-        const emptyErd = state.erd.entities.length === 0 && state.erd.relationships.length === 0;
-        if (!emptyErd && !confirm('Replace your current ERD with the sample?')) return;
+        const emptyErd =
+          state.erd.entities.length === 0 &&
+          state.erd.relationships.length === 0;
+        if (!emptyErd && !confirm("Replace your current ERD with the sample?"))
+          return;
         _idSeq = 0;
 
-        const employee = makeEntity({ name: 'EMPLOYEE', kind: 'strong', x: 320, y: 420, attributes: [
-          makeAttribute({ name: 'Ssn', kind: 'key' }),
-          makeAttribute({ name: 'Name', kind: 'composite', children: [
-            makeAttribute({ name: 'Fname', kind: 'simple' }),
-            makeAttribute({ name: 'Minit', kind: 'simple' }),
-            makeAttribute({ name: 'Lname', kind: 'simple' }),
-          ]}),
-          makeAttribute({ name: 'Bdate', kind: 'simple' }),
-          makeAttribute({ name: 'Address', kind: 'simple' }),
-          makeAttribute({ name: 'Sex', kind: 'simple' }),
-          makeAttribute({ name: 'Salary', kind: 'simple' }),
-        ]});
-        const department = makeEntity({ name: 'DEPARTMENT', kind: 'strong', x: 980, y: 240, attributes: [
-          makeAttribute({ name: 'Name', kind: 'key' }),
-          makeAttribute({ name: 'Number', kind: 'key' }),
-          makeAttribute({ name: 'Locations', kind: 'multivalued' }),
-          makeAttribute({ name: 'Number_of_employees', kind: 'derived' }),
-        ]});
-        const project = makeEntity({ name: 'PROJECT', kind: 'strong', x: 1180, y: 560, attributes: [
-          makeAttribute({ name: 'Name', kind: 'key' }),
-          makeAttribute({ name: 'Number', kind: 'key' }),
-          makeAttribute({ name: 'Location', kind: 'simple' }),
-        ]});
-        const dependent = makeEntity({ name: 'DEPENDENT', kind: 'weak', x: 540, y: 880, attributes: [
-          makeAttribute({ name: 'Name', kind: 'partial-key' }),
-          makeAttribute({ name: 'Sex', kind: 'simple' }),
-          makeAttribute({ name: 'Birth_date', kind: 'simple' }),
-          makeAttribute({ name: 'Relationship', kind: 'simple' }),
-        ]});
+        const employee = makeEntity({
+          name: "EMPLOYEE",
+          kind: "strong",
+          x: 320,
+          y: 420,
+          attributes: [
+            makeAttribute({ name: "Ssn", kind: "key" }),
+            makeAttribute({
+              name: "Name",
+              kind: "composite",
+              children: [
+                makeAttribute({ name: "Fname", kind: "simple" }),
+                makeAttribute({ name: "Minit", kind: "simple" }),
+                makeAttribute({ name: "Lname", kind: "simple" }),
+              ],
+            }),
+            makeAttribute({ name: "Bdate", kind: "simple" }),
+            makeAttribute({ name: "Address", kind: "simple" }),
+            makeAttribute({ name: "Sex", kind: "simple" }),
+            makeAttribute({ name: "Salary", kind: "simple" }),
+          ],
+        });
+        const department = makeEntity({
+          name: "DEPARTMENT",
+          kind: "strong",
+          x: 980,
+          y: 240,
+          attributes: [
+            makeAttribute({ name: "Name", kind: "key" }),
+            makeAttribute({ name: "Number", kind: "key" }),
+            makeAttribute({ name: "Locations", kind: "multivalued" }),
+            makeAttribute({ name: "Number_of_employees", kind: "derived" }),
+          ],
+        });
+        const project = makeEntity({
+          name: "PROJECT",
+          kind: "strong",
+          x: 1180,
+          y: 560,
+          attributes: [
+            makeAttribute({ name: "Name", kind: "key" }),
+            makeAttribute({ name: "Number", kind: "key" }),
+            makeAttribute({ name: "Location", kind: "simple" }),
+          ],
+        });
+        const dependent = makeEntity({
+          name: "DEPENDENT",
+          kind: "weak",
+          x: 540,
+          y: 880,
+          attributes: [
+            makeAttribute({ name: "Name", kind: "partial-key" }),
+            makeAttribute({ name: "Sex", kind: "simple" }),
+            makeAttribute({ name: "Birth_date", kind: "simple" }),
+            makeAttribute({ name: "Relationship", kind: "simple" }),
+          ],
+        });
 
-        const worksFor = makeRelationship({ name: 'WORKS_FOR', kind: 'normal', x: 640, y: 280, participants: [
-          makeParticipant({ entityId: employee.id, cardinality: 'N', participation: 'total' }),
-          makeParticipant({ entityId: department.id, cardinality: '1', participation: 'total' }),
-        ]});
-        const manages = makeRelationship({ name: 'MANAGES', kind: 'normal', x: 640, y: 400, attributes: [
-          makeAttribute({ name: 'Start_date', kind: 'simple' }),
-        ], participants: [
-          makeParticipant({ entityId: employee.id, cardinality: '1', participation: 'partial' }),
-          makeParticipant({ entityId: department.id, cardinality: '1', participation: 'total' }),
-        ]});
-        const controls = makeRelationship({ name: 'CONTROLS', kind: 'normal', x: 1080, y: 400, participants: [
-          makeParticipant({ entityId: department.id, cardinality: '1', participation: 'partial' }),
-          makeParticipant({ entityId: project.id, cardinality: 'N', participation: 'total' }),
-        ]});
-        const worksOn = makeRelationship({ name: 'WORKS_ON', kind: 'normal', x: 740, y: 600, attributes: [
-          makeAttribute({ name: 'Hours', kind: 'simple' }),
-        ], participants: [
-          makeParticipant({ entityId: employee.id, cardinality: 'M', participation: 'partial' }),
-          makeParticipant({ entityId: project.id, cardinality: 'N', participation: 'total' }),
-        ]});
-        const supervision = makeRelationship({ name: 'SUPERVISION', kind: 'normal', x: 120, y: 420, participants: [
-          makeParticipant({ entityId: employee.id, role: 'Supervisor', cardinality: '1', participation: 'partial' }),
-          makeParticipant({ entityId: employee.id, role: 'Supervisee', cardinality: 'N', participation: 'partial' }),
-        ]});
-        const dependentsOf = makeRelationship({ name: 'DEPENDENTS_OF', kind: 'identifying', x: 420, y: 640, participants: [
-          makeParticipant({ entityId: employee.id, cardinality: '1', participation: 'partial' }),
-          makeParticipant({ entityId: dependent.id, cardinality: 'N', participation: 'total' }),
-        ]});
+        const worksFor = makeRelationship({
+          name: "WORKS_FOR",
+          kind: "normal",
+          x: 640,
+          y: 280,
+          participants: [
+            makeParticipant({
+              entityId: employee.id,
+              cardinality: "N",
+              participation: "total",
+            }),
+            makeParticipant({
+              entityId: department.id,
+              cardinality: "1",
+              participation: "total",
+            }),
+          ],
+        });
+        const manages = makeRelationship({
+          name: "MANAGES",
+          kind: "normal",
+          x: 640,
+          y: 400,
+          attributes: [makeAttribute({ name: "Start_date", kind: "simple" })],
+          participants: [
+            makeParticipant({
+              entityId: employee.id,
+              cardinality: "1",
+              participation: "partial",
+            }),
+            makeParticipant({
+              entityId: department.id,
+              cardinality: "1",
+              participation: "total",
+            }),
+          ],
+        });
+        const controls = makeRelationship({
+          name: "CONTROLS",
+          kind: "normal",
+          x: 1080,
+          y: 400,
+          participants: [
+            makeParticipant({
+              entityId: department.id,
+              cardinality: "1",
+              participation: "partial",
+            }),
+            makeParticipant({
+              entityId: project.id,
+              cardinality: "N",
+              participation: "total",
+            }),
+          ],
+        });
+        const worksOn = makeRelationship({
+          name: "WORKS_ON",
+          kind: "normal",
+          x: 740,
+          y: 600,
+          attributes: [makeAttribute({ name: "Hours", kind: "simple" })],
+          participants: [
+            makeParticipant({
+              entityId: employee.id,
+              cardinality: "M",
+              participation: "partial",
+            }),
+            makeParticipant({
+              entityId: project.id,
+              cardinality: "N",
+              participation: "total",
+            }),
+          ],
+        });
+        const supervision = makeRelationship({
+          name: "SUPERVISION",
+          kind: "normal",
+          x: 120,
+          y: 420,
+          participants: [
+            makeParticipant({
+              entityId: employee.id,
+              role: "Supervisor",
+              cardinality: "1",
+              participation: "partial",
+            }),
+            makeParticipant({
+              entityId: employee.id,
+              role: "Supervisee",
+              cardinality: "N",
+              participation: "partial",
+            }),
+          ],
+        });
+        const dependentsOf = makeRelationship({
+          name: "DEPENDENTS_OF",
+          kind: "identifying",
+          x: 420,
+          y: 640,
+          participants: [
+            makeParticipant({
+              entityId: employee.id,
+              cardinality: "1",
+              participation: "partial",
+            }),
+            makeParticipant({
+              entityId: dependent.id,
+              cardinality: "N",
+              participation: "total",
+            }),
+          ],
+        });
 
         state.erd = {
           entities: [employee, department, project, dependent],
-          relationships: [worksFor, manages, controls, worksOn, supervision, dependentsOf],
+          relationships: [
+            worksFor,
+            manages,
+            controls,
+            worksOn,
+            supervision,
+            dependentsOf,
+          ],
         };
         render();
       }
@@ -1415,13 +2494,20 @@
       function layoutErd() {
         const positions = {};
         const ENT_COLS = 3;
-        const ENT_GAP_X = 280, ENT_GAP_Y = 280, ENT_X0 = 180, ENT_Y0 = 120;
+        const ENT_GAP_X = 280,
+          ENT_GAP_Y = 280,
+          ENT_X0 = 180,
+          ENT_Y0 = 120;
 
         // 1. Entities in a grid.
         state.erd.entities.forEach((e, i) => {
-          const col = i % ENT_COLS, row = Math.floor(i / ENT_COLS);
-          const auto = { x: ENT_X0 + col * ENT_GAP_X, y: ENT_Y0 + row * ENT_GAP_Y };
-          const pinned = typeof e.x === 'number' && typeof e.y === 'number';
+          const col = i % ENT_COLS,
+            row = Math.floor(i / ENT_COLS);
+          const auto = {
+            x: ENT_X0 + col * ENT_GAP_X,
+            y: ENT_Y0 + row * ENT_GAP_Y,
+          };
+          const pinned = typeof e.x === "number" && typeof e.y === "number";
           positions[`entity:${e.id}`] = pinned ? { x: e.x, y: e.y } : auto;
         });
 
@@ -1432,20 +2518,28 @@
           const attrs = e.attributes || [];
           const R = 110; // ring radius from entity centre
           attrs.forEach((a, i) => {
-            const pinned = typeof a.x === 'number' && typeof a.y === 'number';
+            const pinned = typeof a.x === "number" && typeof a.y === "number";
             if (pinned) {
               positions[`attribute:${a.id}`] = { x: a.x, y: a.y };
             } else {
               const n = attrs.length;
               // Sweep angles place attributes on a fan above the entity.
-              const tStart = -Math.PI * 1.0, tEnd = -Math.PI * 0.05;
-              const t = n === 1 ? (tStart + tEnd) / 2 : tStart + (tEnd - tStart) * (i / (n - 1));
-              positions[`attribute:${a.id}`] = { x: center.x + R * Math.cos(t), y: center.y + R * Math.sin(t) };
+              const tStart = -Math.PI * 1.0,
+                tEnd = -Math.PI * 0.05;
+              const t =
+                n === 1
+                  ? (tStart + tEnd) / 2
+                  : tStart + (tEnd - tStart) * (i / (n - 1));
+              positions[`attribute:${a.id}`] = {
+                x: center.x + R * Math.cos(t),
+                y: center.y + R * Math.sin(t),
+              };
             }
             // Composite children — fan above the parent attribute.
             (a.children || []).forEach((c, j) => {
               const pPos = positions[`attribute:${a.id}`];
-              const pinnedC = typeof c.x === 'number' && typeof c.y === 'number';
+              const pinnedC =
+                typeof c.x === "number" && typeof c.y === "number";
               if (pinnedC) {
                 positions[`attribute:${c.id}`] = { x: c.x, y: c.y };
                 return;
@@ -1453,14 +2547,17 @@
               const m = (a.children || []).length;
               const ang = -Math.PI / 2 + (j - (m - 1) / 2) * 0.5;
               const r = 80;
-              positions[`attribute:${c.id}`] = { x: pPos.x + r * Math.cos(ang), y: pPos.y + r * Math.sin(ang) };
+              positions[`attribute:${c.id}`] = {
+                x: pPos.x + r * Math.cos(ang),
+                y: pPos.y + r * Math.sin(ang),
+              };
             });
           });
         });
 
         // 3. Relationships — centroid of participants. Self-relationships get an offset.
         state.erd.relationships.forEach((r) => {
-          const pinned = typeof r.x === 'number' && typeof r.y === 'number';
+          const pinned = typeof r.x === "number" && typeof r.y === "number";
           if (pinned) {
             positions[`relationship:${r.id}`] = { x: r.x, y: r.y };
           } else {
@@ -1468,14 +2565,22 @@
             const pts = participants
               .map((p) => positions[`entity:${p.entityId}`])
               .filter(Boolean);
-            const distinctEntityIds = new Set(participants.map((p) => p.entityId));
+            const distinctEntityIds = new Set(
+              participants.map((p) => p.entityId),
+            );
             const isUnary = pts.length > 0 && distinctEntityIds.size === 1;
             if (pts.length === 0) {
-              positions[`relationship:${r.id}`] = { x: ENT_X0, y: ENT_Y0 - 200 };
+              positions[`relationship:${r.id}`] = {
+                x: ENT_X0,
+                y: ENT_Y0 - 200,
+              };
             } else if (isUnary) {
               // Unary self-relationship — offset to the left of the participant entity, clamped so the diamond stays fully visible.
               const minX = ERD_DIMS.REL_W / 2 + 30;
-              positions[`relationship:${r.id}`] = { x: Math.max(minX, pts[0].x - 200), y: pts[0].y };
+              positions[`relationship:${r.id}`] = {
+                x: Math.max(minX, pts[0].x - 200),
+                y: pts[0].y,
+              };
             } else {
               const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
               const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
@@ -1485,14 +2590,17 @@
           // Relationship attributes — fan above the diamond.
           const center = positions[`relationship:${r.id}`];
           (r.attributes || []).forEach((a, i) => {
-            const pinnedA = typeof a.x === 'number' && typeof a.y === 'number';
+            const pinnedA = typeof a.x === "number" && typeof a.y === "number";
             if (pinnedA) {
               positions[`attribute:${a.id}`] = { x: a.x, y: a.y };
             } else {
               const n = (r.attributes || []).length;
               const ang = -Math.PI / 2 + (i - (n - 1) / 2) * 0.5;
               const R = 80;
-              positions[`attribute:${a.id}`] = { x: center.x + R * Math.cos(ang), y: center.y + R * Math.sin(ang) };
+              positions[`attribute:${a.id}`] = {
+                x: center.x + R * Math.cos(ang),
+                y: center.y + R * Math.sin(ang),
+              };
             }
           });
         });
@@ -1501,35 +2609,43 @@
       }
 
       const ATTR_KIND_OPTIONS = [
-        { v: 'simple',      label: 'Simple' },
-        { v: 'key',         label: 'Key (underlined)' },
-        { v: 'partial-key', label: 'Partial key (dashed underline)' },
-        { v: 'composite',   label: 'Composite' },
-        { v: 'multivalued', label: 'Multivalued' },
-        { v: 'derived',     label: 'Derived' },
+        { v: "simple", label: "Simple" },
+        { v: "key", label: "Key (underlined)" },
+        { v: "partial-key", label: "Partial key (dashed underline)" },
+        { v: "composite", label: "Composite" },
+        { v: "multivalued", label: "Multivalued" },
+        { v: "derived", label: "Derived" },
       ];
       // Sub-attributes can be anything except Composite (no infinite nesting — spec section "Composite attributes").
-      const SUB_ATTR_KIND_OPTIONS = ATTR_KIND_OPTIONS.filter((o) => o.v !== 'composite');
+      const SUB_ATTR_KIND_OPTIONS = ATTR_KIND_OPTIONS.filter(
+        (o) => o.v !== "composite",
+      );
       // Relationship attributes can't be keys (no key attributes on relationships in ER notation).
-      const REL_ATTR_KIND_OPTIONS = ATTR_KIND_OPTIONS.filter((o) => o.v === 'simple' || o.v === 'multivalued' || o.v === 'derived');
+      const REL_ATTR_KIND_OPTIONS = ATTR_KIND_OPTIONS.filter(
+        (o) => o.v === "simple" || o.v === "multivalued" || o.v === "derived",
+      );
 
       function renderErdBuilder() {
-        const root = document.getElementById('builder');
+        const root = document.getElementById("builder");
         const entHtml = `
           <div class="section-head">
             <h2>Entities</h2>
             <button class="btn" id="add-entity" type="button">+ Add Entity</button>
           </div>
-          ${state.erd.entities.length === 0
-            ? `<p style="color:#64748b;font-size:13px">No entities yet. Click "Add Entity" to start.</p>`
-            : state.erd.entities.map(renderEntityCard).join('')}
+          ${
+            state.erd.entities.length === 0
+              ? `<p style="color:#64748b;font-size:13px">No entities yet. Click "Add Entity" to start.</p>`
+              : state.erd.entities.map(renderEntityCard).join("")
+          }
           <div class="section-head">
             <h2>Relationships</h2>
-            <button class="btn" id="add-relationship" type="button" ${state.erd.entities.length < 1 ? 'disabled title="Add an entity first"' : ''}>+ Add Relationship</button>
+            <button class="btn" id="add-relationship" type="button" ${state.erd.entities.length < 1 ? 'disabled title="Add an entity first"' : ""}>+ Add Relationship</button>
           </div>
-          ${state.erd.relationships.length === 0
-            ? `<p style="color:#64748b;font-size:13px">No relationships yet.</p>`
-            : state.erd.relationships.map(renderRelationshipCard).join('')}
+          ${
+            state.erd.relationships.length === 0
+              ? `<p style="color:#64748b;font-size:13px">No relationships yet.</p>`
+              : state.erd.relationships.map(renderRelationshipCard).join("")
+          }
         `;
         root.innerHTML = entHtml;
         wireErdBuilderEvents();
@@ -1541,13 +2657,13 @@
             <div class="e-head">
               <input class="e-name" data-action="ent-name" value="${escapeAttr(e.name)}" />
               <div class="kind-toggle" data-action="ent-kind">
-                <button type="button" data-kind="strong" class="${e.kind === 'strong' ? 'active' : ''}">Strong</button>
-                <button type="button" data-kind="weak" class="${e.kind === 'weak' ? 'active' : ''}">Weak</button>
+                <button type="button" data-kind="strong" class="${e.kind === "strong" ? "active" : ""}">Strong</button>
+                <button type="button" data-kind="weak" class="${e.kind === "weak" ? "active" : ""}">Weak</button>
               </div>
               <button class="icon-btn" data-action="delete-entity" title="Delete entity">×</button>
             </div>
             <div class="attr-list" data-attr-host="entity">
-              ${(e.attributes || []).map((a) => renderAttrRow(a, 'entity', false)).join('')}
+              ${(e.attributes || []).map((a) => renderAttrRow(a, "entity", false)).join("")}
             </div>
             <div style="margin-top:6px"><button class="btn ghost" type="button" data-action="add-entity-attr">+ Add Attribute</button></div>
           </div>
@@ -1557,16 +2673,22 @@
       function renderAttrRow(a, ownerKind, isSubAttr) {
         const opts = isSubAttr
           ? SUB_ATTR_KIND_OPTIONS
-          : ownerKind === 'relationship'
+          : ownerKind === "relationship"
             ? REL_ATTR_KIND_OPTIONS
             : ATTR_KIND_OPTIONS;
-        const optsHtml = opts.map((o) => `<option value="${o.v}" ${o.v === a.kind ? 'selected' : ''}>${o.label}</option>`).join('');
-        const childrenHtml = (a.kind === 'composite')
-          ? `<div class="attr-children" data-attr-host="composite" data-parent-aid="${a.id}">
-               ${(a.children || []).map((c) => renderAttrRow(c, 'entity', true)).join('')}
+        const optsHtml = opts
+          .map(
+            (o) =>
+              `<option value="${o.v}" ${o.v === a.kind ? "selected" : ""}>${o.label}</option>`,
+          )
+          .join("");
+        const childrenHtml =
+          a.kind === "composite"
+            ? `<div class="attr-children" data-attr-host="composite" data-parent-aid="${a.id}">
+               ${(a.children || []).map((c) => renderAttrRow(c, "entity", true)).join("")}
                <div><button class="btn ghost" type="button" data-action="add-sub-attr">+ Sub-attribute</button></div>
              </div>`
-          : '';
+            : "";
         return `
           <div class="attr-row" data-aid="${a.id}">
             <input data-action="attr-name" value="${escapeAttr(a.name)}" placeholder="attribute" />
@@ -1578,46 +2700,64 @@
       }
 
       const CARD_OPTIONS = [
-        { v: '1', label: '1' },
-        { v: 'N', label: 'N' },
-        { v: 'M', label: 'M' },
+        { v: "1", label: "1" },
+        { v: "N", label: "N" },
+        { v: "M", label: "M" },
       ];
       const PART_OPTIONS = [
-        { v: 'partial', label: 'Partial' },
-        { v: 'total',   label: 'Total' },
+        { v: "partial", label: "Partial" },
+        { v: "total", label: "Total" },
       ];
 
       function renderRelationshipCard(r) {
-        const entityOpts = (selectedId) => `<option value="">— entity —</option>` +
-          state.erd.entities.map((e) => `<option value="${e.id}" ${e.id === selectedId ? 'selected' : ''}>${escapeAttr(e.name)}</option>`).join('');
-        const cardOpts = (val) => CARD_OPTIONS.map((o) => `<option value="${o.v}" ${o.v === val ? 'selected' : ''}>${o.label}</option>`).join('');
-        const partOpts = (val) => PART_OPTIONS.map((o) => `<option value="${o.v}" ${o.v === val ? 'selected' : ''}>${o.label}</option>`).join('');
-        const participantsHtml = (r.participants || []).map((p) => `
+        const entityOpts = (selectedId) =>
+          `<option value="">— entity —</option>` +
+          state.erd.entities
+            .map(
+              (e) =>
+                `<option value="${e.id}" ${e.id === selectedId ? "selected" : ""}>${escapeAttr(e.name)}</option>`,
+            )
+            .join("");
+        const cardOpts = (val) =>
+          CARD_OPTIONS.map(
+            (o) =>
+              `<option value="${o.v}" ${o.v === val ? "selected" : ""}>${o.label}</option>`,
+          ).join("");
+        const partOpts = (val) =>
+          PART_OPTIONS.map(
+            (o) =>
+              `<option value="${o.v}" ${o.v === val ? "selected" : ""}>${o.label}</option>`,
+          ).join("");
+        const participantsHtml = (r.participants || [])
+          .map(
+            (p) => `
           <div class="part-row" data-pid="${p.id}">
             <select data-action="part-entity">${entityOpts(p.entityId)}</select>
-            <input data-action="part-role" placeholder="role (optional)" value="${escapeAttr(p.role || '')}" />
+            <input data-action="part-role" placeholder="role (optional)" value="${escapeAttr(p.role || "")}" />
             <select data-action="part-card">${cardOpts(p.cardinality)}</select>
             <select data-action="part-part">${partOpts(p.participation)}</select>
             <button class="icon-btn" data-action="delete-part" title="Delete participant">×</button>
           </div>
-        `).join('');
+        `,
+          )
+          .join("");
         const canAddPart = (r.participants || []).length < 3;
         return `
           <div class="R-card" data-rid="${r.id}">
             <div class="R-head">
               <input class="R-name" data-action="rel-name" value="${escapeAttr(r.name)}" />
               <div class="kind-toggle" data-action="rel-kind">
-                <button type="button" data-kind="normal"      class="${r.kind === 'normal' ? 'active' : ''}">Normal</button>
-                <button type="button" data-kind="identifying" class="${r.kind === 'identifying' ? 'active' : ''}">Identifying</button>
+                <button type="button" data-kind="normal"      class="${r.kind === "normal" ? "active" : ""}">Normal</button>
+                <button type="button" data-kind="identifying" class="${r.kind === "identifying" ? "active" : ""}">Identifying</button>
               </div>
               <button class="icon-btn" data-action="delete-rel" title="Delete relationship">×</button>
             </div>
             <div style="font-size:11px;color:#64748b;margin:6px 0 2px">Participants (1–3 — degree is implicit)</div>
             <div class="part-list">${participantsHtml || '<div style="color:#94a3b8;font-size:11px">No participants yet</div>'}</div>
-            <div style="margin-top:4px"><button class="btn ghost" type="button" data-action="add-part" ${canAddPart ? '' : 'disabled title="Max degree is 3"'}>+ Add Participant</button></div>
+            <div style="margin-top:4px"><button class="btn ghost" type="button" data-action="add-part" ${canAddPart ? "" : 'disabled title="Max degree is 3"'}>+ Add Participant</button></div>
             <div style="font-size:11px;color:#64748b;margin:10px 0 2px">Relationship attributes (e.g. Hours)</div>
             <div class="attr-list" data-attr-host="relationship">
-              ${(r.attributes || []).map((a) => renderAttrRow(a, 'relationship', false)).join('')}
+              ${(r.attributes || []).map((a) => renderAttrRow(a, "relationship", false)).join("")}
             </div>
             <div style="margin-top:4px"><button class="btn ghost" type="button" data-action="add-rel-attr">+ Add Attribute</button></div>
           </div>
@@ -1626,158 +2766,227 @@
 
       function wireErdBuilderEvents() {
         // === Helpers ===
-        const findEntity = (el) => state.erd.entities.find((e) => e.id === el.closest('.e-card').dataset.eid);
-        const findRel = (el) => state.erd.relationships.find((r) => r.id === el.closest('.R-card').dataset.rid);
-        const findAttrInList = (list, aid) => (list || []).find((a) => a.id === aid);
+        const findEntity = (el) =>
+          state.erd.entities.find(
+            (e) => e.id === el.closest(".e-card").dataset.eid,
+          );
+        const findRel = (el) =>
+          state.erd.relationships.find(
+            (r) => r.id === el.closest(".R-card").dataset.rid,
+          );
+        const findAttrInList = (list, aid) =>
+          (list || []).find((a) => a.id === aid);
         const findAttrAndOwner = (el) => {
           // Walks up the DOM to find the attribute row + its owner (entity or relationship)
           // + whether the attribute is a sub-attribute (nested under a composite parent).
-          const row = el.closest('.attr-row');
+          const row = el.closest(".attr-row");
           const aid = row.dataset.aid;
           const composite = el.closest('[data-attr-host="composite"]');
           if (composite) {
             const parentAid = composite.dataset.parentAid;
-            const ownerCard = el.closest('.e-card');         // composites only on entities
-            const entity = state.erd.entities.find((e) => e.id === ownerCard.dataset.eid);
+            const ownerCard = el.closest(".e-card"); // composites only on entities
+            const entity = state.erd.entities.find(
+              (e) => e.id === ownerCard.dataset.eid,
+            );
             const parent = findAttrInList(entity.attributes, parentAid);
             const attr = (parent.children || []).find((c) => c.id === aid);
-            return { owner: entity, ownerKind: 'entity', parent, attr };
+            return { owner: entity, ownerKind: "entity", parent, attr };
           }
-          if (el.closest('.e-card')) {
-            const entity = state.erd.entities.find((e) => e.id === el.closest('.e-card').dataset.eid);
+          if (el.closest(".e-card")) {
+            const entity = state.erd.entities.find(
+              (e) => e.id === el.closest(".e-card").dataset.eid,
+            );
             const attr = findAttrInList(entity.attributes, aid);
-            return { owner: entity, ownerKind: 'entity', parent: null, attr };
+            return { owner: entity, ownerKind: "entity", parent: null, attr };
           }
-          if (el.closest('.R-card')) {
-            const rel = state.erd.relationships.find((r) => r.id === el.closest('.R-card').dataset.rid);
+          if (el.closest(".R-card")) {
+            const rel = state.erd.relationships.find(
+              (r) => r.id === el.closest(".R-card").dataset.rid,
+            );
             const attr = findAttrInList(rel.attributes, aid);
-            return { owner: rel, ownerKind: 'relationship', parent: null, attr };
+            return {
+              owner: rel,
+              ownerKind: "relationship",
+              parent: null,
+              attr,
+            };
           }
           return null;
         };
 
         // === Entities ===
-        document.getElementById('add-entity').addEventListener('click', () => {
-          state.erd.entities.push(makeEntity({ attributes: [makeAttribute({ name: 'id', kind: 'key' })] }));
+        document.getElementById("add-entity").addEventListener("click", () => {
+          state.erd.entities.push(
+            makeEntity({
+              attributes: [makeAttribute({ name: "id", kind: "key" })],
+            }),
+          );
           render();
         });
         document.querySelectorAll('[data-action="ent-name"]').forEach((inp) => {
-          inp.addEventListener('input', (e) => {
+          inp.addEventListener("input", (e) => {
             const ent = findEntity(e.target);
-            if (ent) { ent.name = e.target.value; renderErdSvg(); }
+            if (ent) {
+              ent.name = e.target.value;
+              renderErdSvg();
+            }
           });
         });
-        document.querySelectorAll('[data-action="ent-kind"] button').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const ent = findEntity(e.target);
-            if (!ent) return;
-            ent.kind = e.target.dataset.kind;
-            render();
-          });
-        });
-        document.querySelectorAll('[data-action="delete-entity"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const ent = findEntity(e.target);
-            if (!ent) return;
-            if (!confirm(`Delete entity "${ent.name}"? Relationships referencing it will also be cleaned up.`)) return;
-            const eid = ent.id;
-            state.erd.entities = state.erd.entities.filter((x) => x.id !== eid);
-            state.erd.relationships.forEach((r) => {
-              r.participants = (r.participants || []).filter((p) => p.entityId !== eid);
+        document
+          .querySelectorAll('[data-action="ent-kind"] button')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const ent = findEntity(e.target);
+              if (!ent) return;
+              ent.kind = e.target.dataset.kind;
+              render();
             });
-            state.erd.relationships = state.erd.relationships.filter((r) => (r.participants || []).length > 0);
-            render();
           });
-        });
-        document.querySelectorAll('[data-action="add-entity-attr"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const ent = findEntity(e.target);
-            if (!ent) return;
-            ent.attributes = ent.attributes || [];
-            ent.attributes.push(makeAttribute({ name: '' }));
-            render();
+        document
+          .querySelectorAll('[data-action="delete-entity"]')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const ent = findEntity(e.target);
+              if (!ent) return;
+              if (
+                !confirm(
+                  `Delete entity "${ent.name}"? Relationships referencing it will also be cleaned up.`,
+                )
+              )
+                return;
+              const eid = ent.id;
+              state.erd.entities = state.erd.entities.filter(
+                (x) => x.id !== eid,
+              );
+              state.erd.relationships.forEach((r) => {
+                r.participants = (r.participants || []).filter(
+                  (p) => p.entityId !== eid,
+                );
+              });
+              state.erd.relationships = state.erd.relationships.filter(
+                (r) => (r.participants || []).length > 0,
+              );
+              render();
+            });
           });
-        });
+        document
+          .querySelectorAll('[data-action="add-entity-attr"]')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const ent = findEntity(e.target);
+              if (!ent) return;
+              ent.attributes = ent.attributes || [];
+              ent.attributes.push(makeAttribute({ name: "" }));
+              render();
+            });
+          });
 
         // === Attributes (entity + relationship + sub-attributes) ===
-        document.querySelectorAll('[data-action="attr-name"]').forEach((inp) => {
-          inp.addEventListener('input', (e) => {
-            const found = findAttrAndOwner(e.target);
-            if (!found || !found.attr) return;
-            found.attr.name = e.target.value;
-            renderErdSvg();
+        document
+          .querySelectorAll('[data-action="attr-name"]')
+          .forEach((inp) => {
+            inp.addEventListener("input", (e) => {
+              const found = findAttrAndOwner(e.target);
+              if (!found || !found.attr) return;
+              found.attr.name = e.target.value;
+              renderErdSvg();
+            });
           });
-        });
-        document.querySelectorAll('[data-action="attr-kind"]').forEach((sel) => {
-          sel.addEventListener('change', (e) => {
-            const found = findAttrAndOwner(e.target);
-            if (!found || !found.attr) return;
-            const newKind = e.target.value;
-            // Switching away from composite drops the children; switching to composite ensures an empty array.
-            if (found.attr.kind === 'composite' && newKind !== 'composite') found.attr.children = [];
-            if (newKind === 'composite') found.attr.children = found.attr.children || [];
-            found.attr.kind = newKind;
-            render(); // re-render to show/hide nested children section
+        document
+          .querySelectorAll('[data-action="attr-kind"]')
+          .forEach((sel) => {
+            sel.addEventListener("change", (e) => {
+              const found = findAttrAndOwner(e.target);
+              if (!found || !found.attr) return;
+              const newKind = e.target.value;
+              // Switching away from composite drops the children; switching to composite ensures an empty array.
+              if (found.attr.kind === "composite" && newKind !== "composite")
+                found.attr.children = [];
+              if (newKind === "composite")
+                found.attr.children = found.attr.children || [];
+              found.attr.kind = newKind;
+              render(); // re-render to show/hide nested children section
+            });
           });
-        });
-        document.querySelectorAll('[data-action="delete-attr"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const found = findAttrAndOwner(e.target);
-            if (!found || !found.attr) return;
-            if (found.parent) {
-              found.parent.children = found.parent.children.filter((c) => c.id !== found.attr.id);
-            } else {
-              found.owner.attributes = found.owner.attributes.filter((a) => a.id !== found.attr.id);
-            }
-            render();
+        document
+          .querySelectorAll('[data-action="delete-attr"]')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const found = findAttrAndOwner(e.target);
+              if (!found || !found.attr) return;
+              if (found.parent) {
+                found.parent.children = found.parent.children.filter(
+                  (c) => c.id !== found.attr.id,
+                );
+              } else {
+                found.owner.attributes = found.owner.attributes.filter(
+                  (a) => a.id !== found.attr.id,
+                );
+              }
+              render();
+            });
           });
-        });
-        document.querySelectorAll('[data-action="add-sub-attr"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const composite = e.target.closest('[data-attr-host="composite"]');
-            const parentAid = composite.dataset.parentAid;
-            const ownerCard = e.target.closest('.e-card');
-            const entity = state.erd.entities.find((x) => x.id === ownerCard.dataset.eid);
-            const parent = findAttrInList(entity.attributes, parentAid);
-            parent.children = parent.children || [];
-            parent.children.push(makeAttribute({ name: '' }));
-            render();
+        document
+          .querySelectorAll('[data-action="add-sub-attr"]')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const composite = e.target.closest(
+                '[data-attr-host="composite"]',
+              );
+              const parentAid = composite.dataset.parentAid;
+              const ownerCard = e.target.closest(".e-card");
+              const entity = state.erd.entities.find(
+                (x) => x.id === ownerCard.dataset.eid,
+              );
+              const parent = findAttrInList(entity.attributes, parentAid);
+              parent.children = parent.children || [];
+              parent.children.push(makeAttribute({ name: "" }));
+              render();
+            });
           });
-        });
 
         // === Relationships ===
-        const addRel = document.getElementById('add-relationship');
+        const addRel = document.getElementById("add-relationship");
         if (addRel && !addRel.disabled) {
-          addRel.addEventListener('click', () => {
+          addRel.addEventListener("click", () => {
             state.erd.relationships.push(makeRelationship());
             render();
           });
         }
         document.querySelectorAll('[data-action="rel-name"]').forEach((inp) => {
-          inp.addEventListener('input', (e) => {
+          inp.addEventListener("input", (e) => {
             const rel = findRel(e.target);
-            if (rel) { rel.name = e.target.value; renderErdSvg(); }
+            if (rel) {
+              rel.name = e.target.value;
+              renderErdSvg();
+            }
           });
         });
-        document.querySelectorAll('[data-action="rel-kind"] button').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const rel = findRel(e.target);
-            if (!rel) return;
-            rel.kind = e.target.dataset.kind;
-            render();
+        document
+          .querySelectorAll('[data-action="rel-kind"] button')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const rel = findRel(e.target);
+              if (!rel) return;
+              rel.kind = e.target.dataset.kind;
+              render();
+            });
           });
-        });
-        document.querySelectorAll('[data-action="delete-rel"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const rel = findRel(e.target);
-            if (!rel) return;
-            if (!confirm(`Delete relationship "${rel.name}"?`)) return;
-            state.erd.relationships = state.erd.relationships.filter((x) => x.id !== rel.id);
-            render();
+        document
+          .querySelectorAll('[data-action="delete-rel"]')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const rel = findRel(e.target);
+              if (!rel) return;
+              if (!confirm(`Delete relationship "${rel.name}"?`)) return;
+              state.erd.relationships = state.erd.relationships.filter(
+                (x) => x.id !== rel.id,
+              );
+              render();
+            });
           });
-        });
         document.querySelectorAll('[data-action="add-part"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
+          btn.addEventListener("click", (e) => {
             const rel = findRel(e.target);
             if (!rel) return;
             rel.participants = rel.participants || [];
@@ -1786,68 +2995,104 @@
             render();
           });
         });
-        document.querySelectorAll('[data-action="add-rel-attr"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const rel = findRel(e.target);
-            if (!rel) return;
-            rel.attributes = rel.attributes || [];
-            rel.attributes.push(makeAttribute({ name: '' }));
-            render();
+        document
+          .querySelectorAll('[data-action="add-rel-attr"]')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const rel = findRel(e.target);
+              if (!rel) return;
+              rel.attributes = rel.attributes || [];
+              rel.attributes.push(makeAttribute({ name: "" }));
+              render();
+            });
           });
-        });
 
         // === Participants ===
         const findPart = (el) => {
           const rel = findRel(el);
           if (!rel) return { rel: null, part: null };
-          const pid = el.closest('.part-row').dataset.pid;
-          return { rel, part: (rel.participants || []).find((p) => p.id === pid) };
+          const pid = el.closest(".part-row").dataset.pid;
+          return {
+            rel,
+            part: (rel.participants || []).find((p) => p.id === pid),
+          };
         };
-        document.querySelectorAll('[data-action="part-entity"]').forEach((sel) => {
-          sel.addEventListener('change', (e) => {
-            const { part } = findPart(e.target);
-            if (part) { part.entityId = e.target.value; renderErdSvg(); }
+        document
+          .querySelectorAll('[data-action="part-entity"]')
+          .forEach((sel) => {
+            sel.addEventListener("change", (e) => {
+              const { part } = findPart(e.target);
+              if (part) {
+                part.entityId = e.target.value;
+                renderErdSvg();
+              }
+            });
           });
-        });
-        document.querySelectorAll('[data-action="part-role"]').forEach((inp) => {
-          inp.addEventListener('input', (e) => {
-            const { part } = findPart(e.target);
-            if (part) { part.role = e.target.value; renderErdSvg(); }
+        document
+          .querySelectorAll('[data-action="part-role"]')
+          .forEach((inp) => {
+            inp.addEventListener("input", (e) => {
+              const { part } = findPart(e.target);
+              if (part) {
+                part.role = e.target.value;
+                renderErdSvg();
+              }
+            });
           });
-        });
-        document.querySelectorAll('[data-action="part-card"]').forEach((sel) => {
-          sel.addEventListener('change', (e) => {
-            const { part } = findPart(e.target);
-            if (part) { part.cardinality = e.target.value; renderErdSvg(); }
+        document
+          .querySelectorAll('[data-action="part-card"]')
+          .forEach((sel) => {
+            sel.addEventListener("change", (e) => {
+              const { part } = findPart(e.target);
+              if (part) {
+                part.cardinality = e.target.value;
+                renderErdSvg();
+              }
+            });
           });
-        });
-        document.querySelectorAll('[data-action="part-part"]').forEach((sel) => {
-          sel.addEventListener('change', (e) => {
-            const { part } = findPart(e.target);
-            if (part) { part.participation = e.target.value; renderErdSvg(); }
+        document
+          .querySelectorAll('[data-action="part-part"]')
+          .forEach((sel) => {
+            sel.addEventListener("change", (e) => {
+              const { part } = findPart(e.target);
+              if (part) {
+                part.participation = e.target.value;
+                renderErdSvg();
+              }
+            });
           });
-        });
-        document.querySelectorAll('[data-action="delete-part"]').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const { rel, part } = findPart(e.target);
-            if (!rel || !part) return;
-            rel.participants = rel.participants.filter((x) => x.id !== part.id);
-            render();
+        document
+          .querySelectorAll('[data-action="delete-part"]')
+          .forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const { rel, part } = findPart(e.target);
+              if (!rel || !part) return;
+              rel.participants = rel.participants.filter(
+                (x) => x.id !== part.id,
+              );
+              render();
+            });
           });
-        });
       }
       function renderErdSvg() {
-        const svg = document.getElementById('svg');
+        const svg = document.getElementById("svg");
         while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-        const empty = state.erd.entities.length === 0 && state.erd.relationships.length === 0;
+        const empty =
+          state.erd.entities.length === 0 &&
+          state.erd.relationships.length === 0;
         if (empty) {
-          svg.setAttribute('width', 800);
-          svg.setAttribute('height', 200);
-          svg.appendChild(txt(400, 100, 'Add an entity to see your ERD here', {
-            'text-anchor': 'middle', 'dominant-baseline': 'central',
-            fill: '#94a3b8', 'font-family': "'Inter',sans-serif", 'font-size': 14,
-          }));
+          svg.setAttribute("width", 800);
+          svg.setAttribute("height", 200);
+          svg.appendChild(
+            txt(400, 100, "Add an entity to see your ERD here", {
+              "text-anchor": "middle",
+              "dominant-baseline": "central",
+              fill: "#94a3b8",
+              "font-family": "'Inter',sans-serif",
+              "font-size": 14,
+            }),
+          );
           return;
         }
 
@@ -1859,13 +3104,14 @@
 
         // Resize SVG to bounding box. Pinned x/y is clamped to >= 0 by the drag handler (schema mode);
         // ERD nodes use centre coords so we add half-shape padding when sizing.
-        let maxX = 0, maxY = 0;
+        let maxX = 0,
+          maxY = 0;
         Object.values(positions).forEach((p) => {
           maxX = Math.max(maxX, p.x + 80);
           maxY = Math.max(maxY, p.y + 40);
         });
-        svg.setAttribute('width', Math.ceil(maxX + 40));
-        svg.setAttribute('height', Math.ceil(maxY + 40));
+        svg.setAttribute("width", Math.ceil(maxX + 40));
+        svg.setAttribute("height", Math.ceil(maxY + 40));
       }
 
       function drawErdShapes(svg, positions) {
@@ -1874,14 +3120,18 @@
           const epos = positions[`entity:${e.id}`];
           if (!epos) return;
           drawErdEntity(svg, e, epos);
-          (e.attributes || []).forEach((a) => drawAttributeTree(svg, a, positions));
+          (e.attributes || []).forEach((a) =>
+            drawAttributeTree(svg, a, positions),
+          );
         });
         // Relationships and their attributes.
         state.erd.relationships.forEach((r) => {
           const rpos = positions[`relationship:${r.id}`];
           if (!rpos) return;
           drawErdRelationship(svg, r, rpos);
-          (r.attributes || []).forEach((a) => drawAttributeTree(svg, a, positions));
+          (r.attributes || []).forEach((a) =>
+            drawAttributeTree(svg, a, positions),
+          );
         });
       }
 
@@ -1898,64 +3148,94 @@
         state.erd.entities.forEach((e) => {
           const epos = positions[`entity:${e.id}`];
           if (!epos) return;
-          (e.attributes || []).forEach((a) => connectAttributeChain(svg, a, epos, positions));
+          (e.attributes || []).forEach((a) =>
+            connectAttributeChain(svg, a, epos, positions),
+          );
         });
         // Relationship attribute → relationship centre.
         state.erd.relationships.forEach((r) => {
           const rpos = positions[`relationship:${r.id}`];
           if (!rpos) return;
-          (r.attributes || []).forEach((a) => connectAttributeChain(svg, a, rpos, positions));
+          (r.attributes || []).forEach((a) =>
+            connectAttributeChain(svg, a, rpos, positions),
+          );
         });
         // Relationship participants → entity centres.
         state.erd.relationships.forEach((r) => {
           const rpos = positions[`relationship:${r.id}`];
           if (!rpos) return;
           const participantIds = (r.participants || []).map((p) => p.entityId);
-          const isSelf = participantIds.length >= 2 && new Set(participantIds).size === 1;
+          const isSelf =
+            participantIds.length >= 2 && new Set(participantIds).size === 1;
           (r.participants || []).forEach((p, idx) => {
             const epos = positions[`entity:${p.entityId}`];
             if (!epos) return;
             // For self-relationships, both lines attach to the LEFT edge of the entity at offset y positions,
             // since the unary diamond is positioned to the left of the entity centre.
-            let entryX = epos.x, entryY = epos.y;
+            let entryX = epos.x,
+              entryY = epos.y;
             if (isSelf) {
               const off = idx === 0 ? -1 : 1;
-              entryX = epos.x - ERD_DIMS.ENT_W / 2;       // on the left edge of the entity rectangle
+              entryX = epos.x - ERD_DIMS.ENT_W / 2; // on the left edge of the entity rectangle
               entryY = epos.y + off * (ERD_DIMS.ENT_H / 4); // upper-third / lower-third of the entity height
             }
-            drawParticipantConnector(svg, rpos, { x: entryX, y: entryY }, p, isSelf, idx);
+            drawParticipantConnector(
+              svg,
+              rpos,
+              { x: entryX, y: entryY },
+              p,
+              isSelf,
+              idx,
+            );
           });
         });
       }
 
       function drawParticipantConnector(svg, rpos, epos, part, isSelf, idx) {
-        const doubled = part.participation === 'total';
+        const doubled = part.participation === "total";
         drawErdConnector(svg, rpos.x, rpos.y, epos.x, epos.y, doubled);
         // Cardinality label near the diamond.
         const t = 0.18; // fraction of the way from diamond toward entity
         const cx = rpos.x + (epos.x - rpos.x) * t;
         const cy = rpos.y + (epos.y - rpos.y) * t;
         // Offset label perpendicular to the line so it doesn't sit on the line.
-        const dx = epos.x - rpos.x, dy = epos.y - rpos.y;
+        const dx = epos.x - rpos.x,
+          dy = epos.y - rpos.y;
         const len = Math.max(1, Math.hypot(dx, dy));
-        let ox = -dy / len * 12, oy = dx / len * 12;
+        let ox = (-dy / len) * 12,
+          oy = (dx / len) * 12;
         // For self-relationships, the two connectors run nearly parallel, so their natural
         // perpendicular offsets point in the same direction and the labels overlap. Flip the
         // offset for the first participant so the two participants' labels sit on opposite sides.
-        if (isSelf && idx === 0) { ox = -ox; oy = -oy; }
-        svg.appendChild(txt(cx + ox, cy + oy, part.cardinality, {
-          'text-anchor': 'middle', 'dominant-baseline': 'central',
-          fill: ERD_C.LABEL, 'font-family': "'Inter',sans-serif", 'font-size': 12, 'font-weight': 700,
-        }));
+        if (isSelf && idx === 0) {
+          ox = -ox;
+          oy = -oy;
+        }
+        svg.appendChild(
+          txt(cx + ox, cy + oy, part.cardinality, {
+            "text-anchor": "middle",
+            "dominant-baseline": "central",
+            fill: ERD_C.LABEL,
+            "font-family": "'Inter',sans-serif",
+            "font-size": 12,
+            "font-weight": 700,
+          }),
+        );
         // Role label near the entity end (only if non-empty — used mainly for self-relationships).
         if (part.role) {
           const rt = 0.78;
           const rcx = rpos.x + (epos.x - rpos.x) * rt;
           const rcy = rpos.y + (epos.y - rpos.y) * rt;
-          svg.appendChild(txt(rcx + ox, rcy + oy, part.role, {
-            'text-anchor': 'middle', 'dominant-baseline': 'central',
-            fill: ERD_C.LABEL, 'font-family': "'Inter',sans-serif", 'font-size': 11, 'font-style': 'italic',
-          }));
+          svg.appendChild(
+            txt(rcx + ox, rcy + oy, part.role, {
+              "text-anchor": "middle",
+              "dominant-baseline": "central",
+              fill: ERD_C.LABEL,
+              "font-family": "'Inter',sans-serif",
+              "font-size": 11,
+              "font-style": "italic",
+            }),
+          );
         }
       }
 
