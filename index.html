@@ -108,15 +108,69 @@
         main.layout { grid-template-columns: 1fr; }
       }
       @media (max-width: 600px) {
-        body { padding: 20px 14px 56px; gap: 14px; }
+        body { padding: 16px 12px 56px; gap: 12px; }
         h1 { font-size: 18px; gap: 8px; }
         .schema-icon { width: 22px; height: 22px; }
         .sub { font-size: 11px; }
         .btn { padding: 7px 12px; font-size: 11px; }
         .actions { gap: 6px; }
         .mode-switch button { padding: 5px 14px; font-size: 11px; }
-        .card { padding: 14px; }
+        .card { padding: 12px; }
+        .t-card, .e-card, .R-card { padding: 10px; margin-bottom: 10px; }
         footer.page { padding: 8px 0; }
+
+        /* Card head rows wrap so the kind toggle drops below a long name */
+        .t-head, .e-head, .R-head { flex-wrap: wrap; gap: 6px; }
+        .t-name, .e-name, .R-name { flex: 1 1 100%; min-width: 0; }
+
+        /* Schema column row: name on its own line, type+constraint stacked below, delete pinned top-right */
+        .col-row, .col-row.has-fk {
+          grid-template-columns: minmax(0, 1fr) 28px;
+          grid-template-areas:
+            "name del"
+            "type type"
+            "constraint constraint";
+          row-gap: 4px;
+        }
+        .col-row > input[data-action="col-name"] { grid-area: name; }
+        .col-row > .col-type-wrap { grid-area: type; }
+        .col-row > select[data-action="col-constraint"] { grid-area: constraint; }
+        .col-row > button[data-action="delete-column"] { grid-area: del; }
+
+        /* ERD attribute row: name + delete top, kind dropdown full-width below */
+        .attr-row {
+          grid-template-columns: minmax(0, 1fr) 24px;
+          grid-template-areas:
+            "name del"
+            "kind kind";
+          row-gap: 4px;
+        }
+        .attr-row > input[data-action="attr-name"] { grid-area: name; }
+        .attr-row > select[data-action="attr-kind"] { grid-area: kind; }
+        .attr-row > button[data-action="delete-attr"] { grid-area: del; }
+
+        /* ERD participant row: entity+delete top, role full-width middle, card+part bottom */
+        .part-row {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 24px;
+          grid-template-areas:
+            "entity entity del"
+            "role role role"
+            "card part part";
+          row-gap: 4px;
+          margin-bottom: 8px;
+        }
+        .part-row > select[data-action="part-entity"] { grid-area: entity; }
+        .part-row > input[data-action="part-role"] { grid-area: role; }
+        .part-row > select[data-action="part-card"] { grid-area: card; }
+        .part-row > select[data-action="part-part"] { grid-area: part; }
+        .part-row > button[data-action="delete-part"] { grid-area: del; }
+
+        /* Schema relationship grids: shrink-friendly */
+        .rel-row-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 28px; }
+        .rel-row-grid + .rel-row-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+
+        /* Section heads slightly tighter */
+        .section-head h2, .builder-actions h2 { font-size: 13px; }
       }
       @media (min-width: 901px) {
         body { height: 100vh; min-height: 100vh; overflow: hidden; }
